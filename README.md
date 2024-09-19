@@ -2,6 +2,8 @@
 
 A plugin to display segmented bed temps for Prusa XL and Mk4 printers
 
+![image](https://github.com/user-attachments/assets/165ee6d7-c981-4fd5-8d63-53eedfb7dea5)
+
 ## Setup
 
 Install via the bundled [Plugin Manager](https://docs.octoprint.org/en/master/bundledplugins/pluginmanager.html)
