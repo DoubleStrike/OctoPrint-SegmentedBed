@@ -6,12 +6,12 @@ table.heatbed {
 table.heatbed td,
 table.heatbed th {
     border: 1px solid #000000;
-    width: 70px;
-    height: 70px;
+    width: 90px;
+    height: 90px;
     text-align: center;
 }
 
-td#cell1_1 {
+.disabledTile {
     /* Color test */
-    background-color: deepskyblue;
+    background-color: silver;
 }
