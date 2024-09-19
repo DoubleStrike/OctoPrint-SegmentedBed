@@ -8,16 +8,12 @@ $(function() {
     function SegmentedbedViewModel(parameters) {
         var self = this;
         var debug_limitSpam = 0;
-        var debug_spamMax = 5;
+
+        self.testdatabind = ko.observable("nothing yet");
 
         // assign the injected parameters, e.g.:
         // self.loginStateViewModel = parameters[0];
         // self.settingsViewModel = parameters[1];
-
-        self.onAllBound = function(allViewModels) {
-            // do something with them
-            alert("Test1");
-        }
 
         self.fromCurrentData = function (data) {
             if (!data) return;
@@ -32,6 +28,7 @@ $(function() {
 
             // Split out the string and capture heatbed tiles
             var splitLogData = cleanedLogData.split(" ");
+            if (splitLogData.length < 37) return;
             var tile_0_0 = splitLogData[21].split(":")[1];
             var tile_1_0 = splitLogData[22].split(":")[1];
             var tile_2_0 = splitLogData[23].split(":")[1];
@@ -49,10 +46,12 @@ $(function() {
             var tile_2_3 = splitLogData[35].split(":")[1];
             var tile_3_3 = splitLogData[36].split(":")[1];
 
-            // DEBUG: Alert the info up to N times
-            if ((debug_limitSpam++) < debug_spamMax) {
+            // DEBUG: Alert the info up to 5 times
+            if ((debug_limitSpam++) < 5) {
                 alert("tile_0_0=" + tile_0_0);
             }
+
+            self.testdatabind(tile_0_0);
         }
     }
 
@@ -64,7 +63,7 @@ $(function() {
         construct: SegmentedbedViewModel,
 
         // ViewModels your plugin depends on, e.g. loginStateViewModel, settingsViewModel, ...
-        dependencies: [ "temperatureViewModel", "terminalViewModel" ],
+        dependencies: [ "terminalViewModel" ],
         
         // Elements to bind to, e.g. #settings_plugin_segmentedbed, #tab_plugin_segmentedbed, ...
         elements: [ "#tab_plugin_segmentedbed" ]
