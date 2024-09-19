@@ -34,25 +34,25 @@ $(function() {
         // ------------------------------------------------------------------------------
         
         // These are the observables for databinding to the CSS class -------------------
-        self.cell0_0style = ko.observable();
-        self.cell1_0style = ko.observable();
-        self.cell2_0style = ko.observable();
-        self.cell3_0style = ko.observable();
+        self.cell0_0class = ko.observable();
+        self.cell1_0class = ko.observable();
+        self.cell2_0class = ko.observable();
+        self.cell3_0class = ko.observable();
         
-        self.cell0_1style = ko.observable();
-        self.cell1_1style = ko.observable();
-        self.cell2_1style = ko.observable();
-        self.cell3_1style = ko.observable();
+        self.cell0_1class = ko.observable();
+        self.cell1_1class = ko.observable();
+        self.cell2_1class = ko.observable();
+        self.cell3_1class = ko.observable();
         
-        self.cell0_2style = ko.observable();
-        self.cell1_2style = ko.observable();
-        self.cell2_2style = ko.observable();
-        self.cell3_2style = ko.observable();
+        self.cell0_2class = ko.observable();
+        self.cell1_2class = ko.observable();
+        self.cell2_2class = ko.observable();
+        self.cell3_2class = ko.observable();
         
-        self.cell0_3style = ko.observable();
-        self.cell1_3style = ko.observable();
-        self.cell2_3style = ko.observable();
-        self.cell3_3style = ko.observable();
+        self.cell0_3class = ko.observable();
+        self.cell1_3class = ko.observable();
+        self.cell2_3class = ko.observable();
+        self.cell3_3class = ko.observable();
         // ------------------------------------------------------------------------------
         
         // assign the injected parameters, e.g.:
@@ -101,7 +101,7 @@ $(function() {
             var tile_2_3 = splitLogData[34].split(":")[1];
             var tile_3_3 = splitLogData[35].split(":")[1];
             
-            // Update the databound properties
+            // Update the HTML text databound properties
             self.cell0_0(tile_0_0);
             self.cell1_0(tile_1_0);
             self.cell2_0(tile_2_0);
@@ -121,6 +121,27 @@ $(function() {
             self.cell1_3(tile_1_3);
             self.cell2_3(tile_2_3);
             self.cell3_3(tile_3_3);
+
+            // Update the CSS style databound properties
+            if (tile_0_0.split("/")[1] == "0.00") self.cell0_0class("disabledTile"); else self.cell0_0class("");
+            if (tile_1_0.split("/")[1] == "0.00") self.cell1_0class("disabledTile"); else self.cell1_0class("");
+            if (tile_2_0.split("/")[1] == "0.00") self.cell2_0class("disabledTile"); else self.cell2_0class("");
+            if (tile_3_0.split("/")[1] == "0.00") self.cell3_0class("disabledTile"); else self.cell3_0class("");
+            
+            if (tile_0_1.split("/")[1] == "0.00") self.cell0_1class("disabledTile"); else self.cell0_1class("");
+            if (tile_1_1.split("/")[1] == "0.00") self.cell1_1class("disabledTile"); else self.cell1_1class("");
+            if (tile_2_1.split("/")[1] == "0.00") self.cell2_1class("disabledTile"); else self.cell2_1class("");
+            if (tile_3_1.split("/")[1] == "0.00") self.cell3_1class("disabledTile"); else self.cell3_1class("");
+            
+            if (tile_0_2.split("/")[1] == "0.00") self.cell0_2class("disabledTile"); else self.cell0_2class("");
+            if (tile_1_2.split("/")[1] == "0.00") self.cell1_2class("disabledTile"); else self.cell1_2class("");
+            if (tile_2_2.split("/")[1] == "0.00") self.cell2_2class("disabledTile"); else self.cell2_2class("");
+            if (tile_3_2.split("/")[1] == "0.00") self.cell3_2class("disabledTile"); else self.cell3_2class("");
+            
+            if (tile_0_3.split("/")[1] == "0.00") self.cell0_3class("disabledTile"); else self.cell0_3class("");
+            if (tile_1_3.split("/")[1] == "0.00") self.cell1_3class("disabledTile"); else self.cell1_3class("");
+            if (tile_2_3.split("/")[1] == "0.00") self.cell2_3class("disabledTile"); else self.cell2_3class("");
+            if (tile_3_3.split("/")[1] == "0.00") self.cell3_3class("disabledTile"); else self.cell3_3class("");
         }
     }
 
