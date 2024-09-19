@@ -1,0 +1,4 @@
+include README.md
+recursive-include octoprint_segmentedbed/templates *
+recursive-include octoprint_segmentedbed/translations *
+recursive-include octoprint_segmentedbed/static *
