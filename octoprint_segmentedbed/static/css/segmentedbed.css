@@ -15,3 +15,7 @@ table.heatbed th {
     /* Color test */
     background-color: silver;
 }
+
+.explanation {
+    padding-bottom: 30px;
+}
