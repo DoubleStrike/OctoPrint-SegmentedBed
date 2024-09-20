@@ -1,3 +1,45 @@
+/* Flexbox setup */
+.flex-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: normal;
+    align-items: normal;
+    align-content: normal;
+}
+
+.flex-items:nth-child(1) {
+    display: block;
+    flex-grow: 0;
+    flex-shrink: 1;
+    flex-basis: auto;
+    align-self: auto;
+    order: 0;
+}
+
+.flex-items:nth-child(2) {
+    display: block;
+    flex-grow: 0;
+    flex-shrink: 1;
+    flex-basis: auto;
+    align-self: auto;
+    order: 0;
+}
+
+.x-axis {
+    border: none;
+    font-weight: bold;
+    padding: 15px 0;
+    text-align: center;
+}
+
+.y-axis {
+    border: none;
+    font-weight: bold;
+    padding: 310px 20px;
+}
+
+/* Segmented bed grid */
 table.heatbed {
     border: 5px solid #000000;
     text-align: center;
@@ -5,17 +47,30 @@ table.heatbed {
 
 table.heatbed td,
 table.heatbed th {
-    border: 1px solid #000000;
+    border: 2px dashed #000000;
     width: 90px;
     height: 90px;
     text-align: center;
 }
 
-.disabledTile {
+/* Per-tile coloring */
+.tileDisabled {
     /* Color test */
     background-color: silver;
 }
 
+.tileCooling {
+    /* Color test */
+    background-color:lightskyblue;
+}
+
+.tileHeating {
+    /* Color test */
+    background-color: salmon;
+}
+
+
+/* Generic styles */
 .explanation {
     padding-bottom: 30px;
 }

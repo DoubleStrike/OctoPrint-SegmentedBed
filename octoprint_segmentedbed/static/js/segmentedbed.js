@@ -54,10 +54,10 @@ $(function() {
         self.cell2_3class = ko.observable();
         self.cell3_3class = ko.observable();
         // ------------------------------------------------------------------------------
-        
-        // assign the injected parameters, e.g.:
-        // self.loginStateViewModel = parameters[0];
-        // self.settingsViewModel = parameters[1];
+
+        // Testing combining items into a dictionary
+        //var dictionaryTest = { ["cell0"]: "nlah", cell1: "blah" };
+        dictionaryTest = new ko.observableDictionary({ ["cell0"]: "nlah", cell1: "blah" });
         
         self.fromCurrentData = function (data) {
             if (!data) return;
