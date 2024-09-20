@@ -55,10 +55,6 @@ $(function() {
         self.cell3_3class = ko.observable();
         // ------------------------------------------------------------------------------
 
-        // Testing combining items into a dictionary
-        //var dictionaryTest = { ["cell0"]: "nlah", cell1: "blah" };
-        dictionaryTest = new ko.observableDictionary({ ["cell0"]: "nlah", cell1: "blah" });
-        
         self.fromCurrentData = function (data) {
             if (!data) return;
             if (!data.logs) return;
@@ -123,25 +119,73 @@ $(function() {
             self.cell3_3(tile_3_3);
 
             // Update the CSS style databound properties
-            if (tile_0_0.split("/")[1] == "0.00") self.cell0_0class("disabledTile"); else self.cell0_0class("");
-            if (tile_1_0.split("/")[1] == "0.00") self.cell1_0class("disabledTile"); else self.cell1_0class("");
-            if (tile_2_0.split("/")[1] == "0.00") self.cell2_0class("disabledTile"); else self.cell2_0class("");
-            if (tile_3_0.split("/")[1] == "0.00") self.cell3_0class("disabledTile"); else self.cell3_0class("");
+            if (tile_0_0.split("/")[1] == "0.00") self.cell0_0class("tileDisabled"); else {
+                if (tile_0_0.split("/")[0] < tile_0_0.split("/")[1]) self.cell0_0class("tileHeating");
+                else self.cell0_0class("tileCooling");
+            }
+            if (tile_1_0.split("/")[1] == "0.00") self.cell1_0class("tileDisabled"); else {
+                if (tile_1_0.split("/")[0] < tile_1_0.split("/")[1]) self.cell1_0class("tileHeating");
+                else self.cell1_0class("tileCooling");
+            }
+            if (tile_2_0.split("/")[1] == "0.00") self.cell2_0class("tileDisabled"); else {
+                if (tile_2_0.split("/")[0] < tile_2_0.split("/")[1]) self.cell2_0class("tileHeating");
+                else self.cell2_0class("tileCooling");
+            }
+            if (tile_3_0.split("/")[1] == "0.00") self.cell3_0class("tileDisabled"); else {
+                if (tile_3_0.split("/")[0] < tile_3_0.split("/")[1]) self.cell3_0class("tileHeating");
+                else self.cell3_0class("tileCooling");
+            }
             
-            if (tile_0_1.split("/")[1] == "0.00") self.cell0_1class("disabledTile"); else self.cell0_1class("");
-            if (tile_1_1.split("/")[1] == "0.00") self.cell1_1class("disabledTile"); else self.cell1_1class("");
-            if (tile_2_1.split("/")[1] == "0.00") self.cell2_1class("disabledTile"); else self.cell2_1class("");
-            if (tile_3_1.split("/")[1] == "0.00") self.cell3_1class("disabledTile"); else self.cell3_1class("");
+            if (tile_0_1.split("/")[1] == "0.00") self.cell0_1class("tileDisabled"); else {
+                if (tile_0_1.split("/")[0] < tile_0_1.split("/")[1]) self.cell0_1class("tileHeating");
+                else self.cell0_1class("tileCooling");
+            }
+            if (tile_1_1.split("/")[1] == "0.00") self.cell1_1class("tileDisabled"); else {
+                if (tile_1_1.split("/")[0] < tile_1_1.split("/")[1]) self.cell1_1class("tileHeating");
+                else self.cell1_1class("tileCooling");
+            }
+            if (tile_2_1.split("/")[1] == "0.00") self.cell2_1class("tileDisabled"); else {
+                if (tile_2_1.split("/")[0] < tile_2_1.split("/")[1]) self.cell2_1class("tileHeating");
+                else self.cell2_1class("tileCooling");
+            }
+            if (tile_3_1.split("/")[1] == "0.00") self.cell3_1class("tileDisabled"); else {
+                if (tile_3_1.split("/")[0] < tile_3_1.split("/")[1]) self.cell3_1class("tileHeating");
+                else self.cell3_1class("tileCooling");
+            }
             
-            if (tile_0_2.split("/")[1] == "0.00") self.cell0_2class("disabledTile"); else self.cell0_2class("");
-            if (tile_1_2.split("/")[1] == "0.00") self.cell1_2class("disabledTile"); else self.cell1_2class("");
-            if (tile_2_2.split("/")[1] == "0.00") self.cell2_2class("disabledTile"); else self.cell2_2class("");
-            if (tile_3_2.split("/")[1] == "0.00") self.cell3_2class("disabledTile"); else self.cell3_2class("");
+            if (tile_0_2.split("/")[1] == "0.00") self.cell0_2class("tileDisabled"); else {
+                if (tile_0_2.split("/")[0] < tile_0_2.split("/")[1]) self.cell0_2class("tileHeating");
+                else self.cell0_2class("tileCooling");
+            }
+            if (tile_1_2.split("/")[1] == "0.00") self.cell1_2class("tileDisabled"); else {
+                if (tile_1_2.split("/")[0] < tile_1_2.split("/")[1]) self.cell1_2class("tileHeating");
+                else self.cell1_2class("tileCooling");
+            }
+            if (tile_2_2.split("/")[1] == "0.00") self.cell2_2class("tileDisabled"); else {
+                if (tile_2_2.split("/")[0] < tile_2_2.split("/")[1]) self.cell2_2class("tileHeating");
+                else self.cell2_2class("tileCooling");
+            }
+            if (tile_3_2.split("/")[1] == "0.00") self.cell3_2class("tileDisabled"); else {
+                if (tile_3_2.split("/")[0] < tile_3_2.split("/")[1]) self.cell3_2class("tileHeating");
+                else self.cell3_2class("tileCooling");
+            }
             
-            if (tile_0_3.split("/")[1] == "0.00") self.cell0_3class("disabledTile"); else self.cell0_3class("");
-            if (tile_1_3.split("/")[1] == "0.00") self.cell1_3class("disabledTile"); else self.cell1_3class("");
-            if (tile_2_3.split("/")[1] == "0.00") self.cell2_3class("disabledTile"); else self.cell2_3class("");
-            if (tile_3_3.split("/")[1] == "0.00") self.cell3_3class("disabledTile"); else self.cell3_3class("");
+            if (tile_0_3.split("/")[1] == "0.00") self.cell0_3class("tileDisabled"); else {
+                if (tile_0_3.split("/")[0] < tile_0_3.split("/")[1]) self.cell0_3class("tileHeating");
+                else self.cell0_3class("tileCooling");
+            }
+            if (tile_1_3.split("/")[1] == "0.00") self.cell1_3class("tileDisabled"); else {
+                if (tile_1_3.split("/")[0] < tile_1_3.split("/")[1]) self.cell1_3class("tileHeating");
+                else self.cell1_3class("tileCooling");
+            }
+            if (tile_2_3.split("/")[1] == "0.00") self.cell2_3class("tileDisabled"); else {
+                if (tile_2_3.split("/")[0] < tile_2_3.split("/")[1]) self.cell2_3class("tileHeating");
+                else self.cell2_3class("tileCooling");
+            }
+            if (tile_3_3.split("/")[1] == "0.00") self.cell3_3class("tileDisabled"); else {
+                if (tile_3_3.split("/")[0] < tile_3_3.split("/")[1]) self.cell3_3class("tileHeating");
+                else self.cell3_3class("tileCooling");
+            }
         }
     }
 
