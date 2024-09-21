@@ -13,6 +13,7 @@ $(function() {
         var classOff = "tileDisabled";
         var classHeat = "tileHeating";
         var classCool = "tileCooling";
+        var temperatureTolerance = 0.3;
         var reorderMatrix = [36, 39, 42, 45, 24, 27, 30, 33, 12, 15, 18, 21, 0, 3, 6, 9];
         
         // Data model should contain Name, currentTemp, setTemp
@@ -64,6 +65,8 @@ $(function() {
                 let newStyle = "";
                 if (targetTemp == "0.00") {
                     newStyle = classOff;
+                } else if(Number(currentTemp) == Number(targetTemp)) {
+                    newStyle = "";
                 } else {
                     newStyle = (Number(currentTemp) < Number(targetTemp)) ? classHeat : classCool;
                 }
