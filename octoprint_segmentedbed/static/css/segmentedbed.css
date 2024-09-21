@@ -42,15 +42,17 @@
 /* Segmented bed grid */
 table.heatbed {
     border: 5px solid #000000;
+    width: 360px !important;
     text-align: center;
 }
 
 table.heatbed td,
 table.heatbed th {
     border: 2px dashed #000000;
-    width: 90px;
     height: 90px;
+    width: 90px;
     text-align: center;
+    vertical-align: center !important;
 }
 
 /* Per-tile coloring */
