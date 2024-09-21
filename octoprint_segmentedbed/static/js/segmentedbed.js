@@ -13,6 +13,7 @@ $(function() {
         var classOff = "tileDisabled";
         var classHeat = "tileHeating";
         var classCool = "tileCooling";
+        var alertOnce = false;
         
         // Data model should contain Name, row?, column?, currentTemp, setTemp
         
@@ -76,121 +77,63 @@ $(function() {
             B_1_2:22.40/0.00 B_2_2:22.40/0.00 B_3_2:22.30/0.00 B_0_3:22.30/0.00 B_1_3:22.20/0.00 B_2_3:22.40/0.00 B_3_3:22.40/0.00
             */
             
-            // Parse the line and split off the section with bed temps (the second chunk)
-            var cleanedLogData = newLogData.trim().split("@5:0 ")[1];
+            // Get the portion of the line with temperatures
+            var preParseData = newLogData.trim().split("@5:0 ")[1];
             
-            // Split out the string and capture heatbed tiles
-            var splitLogData = cleanedLogData.split(" ");
-            if (splitLogData.length < 16) return;
-            var tile_0_0 = splitLogData[0].split(":")[1];
-            var tile_1_0 = splitLogData[1].split(":")[1];
-            var tile_2_0 = splitLogData[2].split(":")[1];
-            var tile_3_0 = splitLogData[3].split(":")[1];
+            // Split on spaces (\s), colons, and slashes - should result in tile_count * 3 array elements (48 for the XL)
+            var splitArray = preParseData.split(/[\s\:\/]+/);
+            if (splitArray.length < 48) return;
+
+            // Increment thru ever 3rd entry since there are 3 datapoints per tile (name, currentTemp, targetTemp)
+            //      in that order. So we shorthand this by lopping thru every 3 items and offsetting the indices.
+            //      This is how we fill the dictionary.
+            var dictionaryOfTemps = {};
             
-            var tile_0_1 = splitLogData[4].split(":")[1];
-            var tile_1_1 = splitLogData[5].split(":")[1];
-            var tile_2_1 = splitLogData[6].split(":")[1];
-            var tile_3_1 = splitLogData[7].split(":")[1];
-            
-            var tile_0_2 = splitLogData[8].split(":")[1];
-            var tile_1_2 = splitLogData[9].split(":")[1];
-            var tile_2_2 = splitLogData[10].split(":")[1];
-            var tile_3_2 = splitLogData[11].split(":")[1];
-            
-            var tile_0_3 = splitLogData[12].split(":")[1];
-            var tile_1_3 = splitLogData[13].split(":")[1];
-            var tile_2_3 = splitLogData[14].split(":")[1];
-            var tile_3_3 = splitLogData[15].split(":")[1];
+            for (i = 0; i < splitArray.length; i += 3) {
+                dictionaryOfTemps[splitArray[i]] = { Current: splitArray[i + 1], Target: splitArray[i + 2] };
+            }
             
             // Update the HTML text databound properties
-            self.cell0_0(tile_0_0);
-            self.cell1_0(tile_1_0);
-            self.cell2_0(tile_2_0);
-            self.cell3_0(tile_3_0);
+            self.cell0_0(dictionaryOfTemps["B_0_0"].Current + "/" + dictionaryOfTemps["B_0_0"].Target);
+            self.cell1_0(dictionaryOfTemps["B_1_0"].Current + "/" + dictionaryOfTemps["B_1_0"].Target);
+            self.cell2_0(dictionaryOfTemps["B_2_0"].Current + "/" + dictionaryOfTemps["B_2_0"].Target);
+            self.cell3_0(dictionaryOfTemps["B_3_0"].Current + "/" + dictionaryOfTemps["B_3_0"].Target);
             
-            self.cell0_1(tile_0_1);
-            self.cell1_1(tile_1_1);
-            self.cell2_1(tile_2_1);
-            self.cell3_1(tile_3_1);
+            self.cell0_1(dictionaryOfTemps["B_0_1"].Current + "/" + dictionaryOfTemps["B_0_1"].Target);
+            self.cell1_1(dictionaryOfTemps["B_1_1"].Current + "/" + dictionaryOfTemps["B_1_1"].Target);
+            self.cell2_1(dictionaryOfTemps["B_2_1"].Current + "/" + dictionaryOfTemps["B_2_1"].Target);
+            self.cell3_1(dictionaryOfTemps["B_3_1"].Current + "/" + dictionaryOfTemps["B_3_1"].Target);
             
-            self.cell0_2(tile_0_2);
-            self.cell1_2(tile_1_2);
-            self.cell2_2(tile_2_2);
-            self.cell3_2(tile_3_2);
+            self.cell0_2(dictionaryOfTemps["B_0_2"].Current + "/" + dictionaryOfTemps["B_0_2"].Target);
+            self.cell1_2(dictionaryOfTemps["B_1_2"].Current + "/" + dictionaryOfTemps["B_1_2"].Target);
+            self.cell2_2(dictionaryOfTemps["B_2_2"].Current + "/" + dictionaryOfTemps["B_2_2"].Target);
+            self.cell3_2(dictionaryOfTemps["B_3_2"].Current + "/" + dictionaryOfTemps["B_3_2"].Target);
             
-            self.cell0_3(tile_0_3);
-            self.cell1_3(tile_1_3);
-            self.cell2_3(tile_2_3);
-            self.cell3_3(tile_3_3);
+            self.cell0_3(dictionaryOfTemps["B_0_3"].Current + "/" + dictionaryOfTemps["B_0_3"].Target);
+            self.cell1_3(dictionaryOfTemps["B_1_3"].Current + "/" + dictionaryOfTemps["B_1_3"].Target);
+            self.cell2_3(dictionaryOfTemps["B_2_3"].Current + "/" + dictionaryOfTemps["B_2_3"].Target);
+            self.cell3_3(dictionaryOfTemps["B_3_3"].Current + "/" + dictionaryOfTemps["B_3_3"].Target);
 
             // Update the CSS style databound properties
-            if (tile_0_0.split("/")[1] == "0.00") self.cell0_0class(classOff); else {
-                if (tile_0_0.split("/")[0] < tile_0_0.split("/")[1]) self.cell0_0class(classHeat);
-                else self.cell0_0class(classCool);
-            }
-            if (tile_1_0.split("/")[1] == "0.00") self.cell1_0class(classOff); else {
-                if (tile_1_0.split("/")[0] < tile_1_0.split("/")[1]) self.cell1_0class(classHeat);
-                else self.cell1_0class(classCool);
-            }
-            if (tile_2_0.split("/")[1] == "0.00") self.cell2_0class(classOff); else {
-                if (tile_2_0.split("/")[0] < tile_2_0.split("/")[1]) self.cell2_0class(classHeat);
-                else self.cell2_0class(classCool);
-            }
-            if (tile_3_0.split("/")[1] == "0.00") self.cell3_0class(classOff); else {
-                if (tile_3_0.split("/")[0] < tile_3_0.split("/")[1]) self.cell3_0class(classHeat);
-                else self.cell3_0class(classCool);
-            }
-            
-            if (tile_0_1.split("/")[1] == "0.00") self.cell0_1class(classOff); else {
-                if (tile_0_1.split("/")[0] < tile_0_1.split("/")[1]) self.cell0_1class(classHeat);
-                else self.cell0_1class(classCool);
-            }
-            if (tile_1_1.split("/")[1] == "0.00") self.cell1_1class(classOff); else {
-                if (tile_1_1.split("/")[0] < tile_1_1.split("/")[1]) self.cell1_1class(classHeat);
-                else self.cell1_1class(classCool);
-            }
-            if (tile_2_1.split("/")[1] == "0.00") self.cell2_1class(classOff); else {
-                if (tile_2_1.split("/")[0] < tile_2_1.split("/")[1]) self.cell2_1class(classHeat);
-                else self.cell2_1class(classCool);
-            }
-            if (tile_3_1.split("/")[1] == "0.00") self.cell3_1class(classOff); else {
-                if (tile_3_1.split("/")[0] < tile_3_1.split("/")[1]) self.cell3_1class(classHeat);
-                else self.cell3_1class(classCool);
-            }
-            
-            if (tile_0_2.split("/")[1] == "0.00") self.cell0_2class(classOff); else {
-                if (tile_0_2.split("/")[0] < tile_0_2.split("/")[1]) self.cell0_2class(classHeat);
-                else self.cell0_2class(classCool);
-            }
-            if (tile_1_2.split("/")[1] == "0.00") self.cell1_2class(classOff); else {
-                if (tile_1_2.split("/")[0] < tile_1_2.split("/")[1]) self.cell1_2class(classHeat);
-                else self.cell1_2class(classCool);
-            }
-            if (tile_2_2.split("/")[1] == "0.00") self.cell2_2class(classOff); else {
-                if (tile_2_2.split("/")[0] < tile_2_2.split("/")[1]) self.cell2_2class(classHeat);
-                else self.cell2_2class(classCool);
-            }
-            if (tile_3_2.split("/")[1] == "0.00") self.cell3_2class(classOff); else {
-                if (tile_3_2.split("/")[0] < tile_3_2.split("/")[1]) self.cell3_2class(classHeat);
-                else self.cell3_2class(classCool);
-            }
-            
-            if (tile_0_3.split("/")[1] == "0.00") self.cell0_3class(classOff); else {
-                if (tile_0_3.split("/")[0] < tile_0_3.split("/")[1]) self.cell0_3class(classHeat);
-                else self.cell0_3class(classCool);
-            }
-            if (tile_1_3.split("/")[1] == "0.00") self.cell1_3class(classOff); else {
-                if (tile_1_3.split("/")[0] < tile_1_3.split("/")[1]) self.cell1_3class(classHeat);
-                else self.cell1_3class(classCool);
-            }
-            if (tile_2_3.split("/")[1] == "0.00") self.cell2_3class(classOff); else {
-                if (tile_2_3.split("/")[0] < tile_2_3.split("/")[1]) self.cell2_3class(classHeat);
-                else self.cell2_3class(classCool);
-            }
-            if (tile_3_3.split("/")[1] == "0.00") self.cell3_3class(classOff); else {
-                if (tile_3_3.split("/")[0] < tile_3_3.split("/")[1]) self.cell3_3class(classHeat);
-                else self.cell3_3class(classCool);
-            }
+            if (dictionaryOfTemps["B_0_0"].Target == "0.00") self.cell0_0class(classOff); else { if (dictionaryOfTemps["B_0_0"].Current < dictionaryOfTemps["B_0_0"].Target) self.cell0_0class(classHeat); else self.cell0_0class(classCool); }
+            if (dictionaryOfTemps["B_1_0"].Target == "0.00") self.cell1_0class(classOff); else { if (dictionaryOfTemps["B_1_0"].Current < dictionaryOfTemps["B_1_0"].Target) self.cell1_0class(classHeat); else self.cell1_0class(classCool); }
+            if (dictionaryOfTemps["B_2_0"].Target == "0.00") self.cell2_0class(classOff); else { if (dictionaryOfTemps["B_2_0"].Current < dictionaryOfTemps["B_2_0"].Target) self.cell2_0class(classHeat); else self.cell2_0class(classCool); }
+            if (dictionaryOfTemps["B_3_0"].Target == "0.00") self.cell3_0class(classOff); else { if (dictionaryOfTemps["B_3_0"].Current < dictionaryOfTemps["B_3_0"].Target) self.cell3_0class(classHeat); else self.cell3_0class(classCool); }
+
+            if (dictionaryOfTemps["B_0_1"].Target == "0.00") self.cell0_1class(classOff); else { if (dictionaryOfTemps["B_0_1"].Current < dictionaryOfTemps["B_0_1"].Target) self.cell0_1class(classHeat); else self.cell0_1class(classCool); }
+            if (dictionaryOfTemps["B_1_1"].Target == "0.00") self.cell1_1class(classOff); else { if (dictionaryOfTemps["B_1_1"].Current < dictionaryOfTemps["B_1_1"].Target) self.cell1_1class(classHeat); else self.cell1_1class(classCool); }
+            if (dictionaryOfTemps["B_2_1"].Target == "0.00") self.cell2_1class(classOff); else { if (dictionaryOfTemps["B_2_1"].Current < dictionaryOfTemps["B_2_1"].Target) self.cell2_1class(classHeat); else self.cell2_1class(classCool); }
+            if (dictionaryOfTemps["B_3_1"].Target == "0.00") self.cell3_1class(classOff); else { if (dictionaryOfTemps["B_3_1"].Current < dictionaryOfTemps["B_3_1"].Target) self.cell3_1class(classHeat); else self.cell3_1class(classCool); }
+
+            if (dictionaryOfTemps["B_0_2"].Target == "0.00") self.cell0_2class(classOff); else { if (dictionaryOfTemps["B_0_2"].Current < dictionaryOfTemps["B_0_2"].Target) self.cell0_2class(classHeat); else self.cell0_2class(classCool); }
+            if (dictionaryOfTemps["B_1_2"].Target == "0.00") self.cell1_2class(classOff); else { if (dictionaryOfTemps["B_1_2"].Current < dictionaryOfTemps["B_1_2"].Target) self.cell1_2class(classHeat); else self.cell1_2class(classCool); }
+            if (dictionaryOfTemps["B_2_2"].Target == "0.00") self.cell2_2class(classOff); else { if (dictionaryOfTemps["B_2_2"].Current < dictionaryOfTemps["B_2_2"].Target) self.cell2_2class(classHeat); else self.cell2_2class(classCool); }
+            if (dictionaryOfTemps["B_3_2"].Target == "0.00") self.cell3_2class(classOff); else { if (dictionaryOfTemps["B_3_2"].Current < dictionaryOfTemps["B_3_2"].Target) self.cell3_2class(classHeat); else self.cell3_2class(classCool); }
+
+            if (dictionaryOfTemps["B_0_3"].Target == "0.00") self.cell0_3class(classOff); else { if (dictionaryOfTemps["B_0_3"].Current < dictionaryOfTemps["B_0_3"].Target) self.cell0_3class(classHeat); else self.cell0_3class(classCool); }
+            if (dictionaryOfTemps["B_1_3"].Target == "0.00") self.cell1_3class(classOff); else { if (dictionaryOfTemps["B_1_3"].Current < dictionaryOfTemps["B_1_3"].Target) self.cell1_3class(classHeat); else self.cell1_3class(classCool); }
+            if (dictionaryOfTemps["B_2_3"].Target == "0.00") self.cell2_3class(classOff); else { if (dictionaryOfTemps["B_2_3"].Current < dictionaryOfTemps["B_2_3"].Target) self.cell2_3class(classHeat); else self.cell2_3class(classCool); }
+            if (dictionaryOfTemps["B_3_3"].Target == "0.00") self.cell3_3class(classOff); else { if (dictionaryOfTemps["B_3_3"].Current < dictionaryOfTemps["B_3_3"].Target) self.cell3_3class(classHeat); else self.cell3_3class(classCool); }
         }
     }
 
