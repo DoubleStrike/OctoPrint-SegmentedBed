@@ -1,8 +1,12 @@
+<!-- High-level positioning container -->
 <div class="flex-container">
+    
+    <!-- Left column container -->
     <div class="flex-items">
         <div class="y-axis">Y axis</div>
     </div>
     
+    <!-- Right column container -->
     <div class="flex-items">
         <h3>Segmented Heat Bed Tiles</h3>
         <div class="subheading">Temperatures shown as current/target.</div>
@@ -10,13 +14,12 @@
         
         <div data-bind="foreach: myObservableArray" class="grid-container" id="heatbed">
             <div data-bind="class: Style">
-                <span data-bind="text: Tile"></span><br />
-                <span data-bind="text: Current"></span><br />
+                <span data-bind="text: Tile"></span>
+                <span data-bind="text: Current"></span>
                 <span data-bind="text: Target"></span>
             </div>
         </div>
         
         <div class="x-axis">X axis (Front edge)</div>
-
     </div>
 </div>

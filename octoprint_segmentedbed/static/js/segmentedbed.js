@@ -36,6 +36,7 @@ $(function() {
             */
             
             // Get the portion of the line with temperatures
+            if (newLogData.search("@5:0") < 10) return;
             var preParseData = newLogData.trim().split("@5:0 ")[1];
             
             // Split on spaces (\s), colons, and slashes - should result in tile_count * 3 array elements (48 for the XL)
