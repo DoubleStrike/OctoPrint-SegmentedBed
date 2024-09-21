@@ -16,9 +16,9 @@ $(function() {
         var temperatureTolerance = 0.3;
         var reorderMatrix = [36, 39, 42, 45, 24, 27, 30, 33, 12, 15, 18, 21, 0, 3, 6, 9];
         
-        // Data model should contain Name, currentTemp, setTemp
-        self.myObservableArray = ko.observableArray(); 
-        
+        // Array data model: ID, Tile, Current, Target, Style
+        self.heatbedTileArray = ko.observableArray();
+
         self.fromCurrentData = function (data) {
             if (!data) return;
             if (!data.logs) return;
@@ -47,7 +47,7 @@ $(function() {
             //      in that order. So we shorthand this by lopping thru every 3 items and offsetting the indices.
             //      This is how we fill the dictionary.
             var dictionaryOfTemps = {};
-            self.myObservableArray.removeAll();
+            self.heatbedTileArray.removeAll();
             
             // Build the array of information to use for the next step
             for (i = 0; i < splitArray.length; i += 3) {
@@ -71,7 +71,13 @@ $(function() {
                 } else {
                     newStyle = (Number(currentTemp) < Number(targetTemp)) ? classHeat : classCool;
                 }
-                self.myObservableArray.push({ Tile: tileName, Current: currentTemp, Target: targetTemp, Style: newStyle, ID: self.myObservableArray().length });
+                self.heatbedTileArray.push({
+                    ID: self.heatbedTileArray().length,
+                    Tile: tileName,
+                    Current: currentTemp,
+                    Target: targetTemp,
+                    Style: newStyle
+                });
             }
         }
     }
