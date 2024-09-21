@@ -76,31 +76,31 @@ $(function() {
             B_1_2:22.40/0.00 B_2_2:22.40/0.00 B_3_2:22.30/0.00 B_0_3:22.30/0.00 B_1_3:22.20/0.00 B_2_3:22.40/0.00 B_3_3:22.40/0.00
             */
             
-            // Parse the line and split off the initial characters ("Recv:  ")
-            var cleanedLogData = newLogData.trim().substring(7);
+            // Parse the line and split off the section with bed temps (the second chunk)
+            var cleanedLogData = newLogData.trim().split("@5:0 ")[1];
             
             // Split out the string and capture heatbed tiles
             var splitLogData = cleanedLogData.split(" ");
-            if (splitLogData.length < 36) return;
-            var tile_0_0 = splitLogData[20].split(":")[1];
-            var tile_1_0 = splitLogData[21].split(":")[1];
-            var tile_2_0 = splitLogData[22].split(":")[1];
-            var tile_3_0 = splitLogData[23].split(":")[1];
+            if (splitLogData.length < 16) return;
+            var tile_0_0 = splitLogData[0].split(":")[1];
+            var tile_1_0 = splitLogData[1].split(":")[1];
+            var tile_2_0 = splitLogData[2].split(":")[1];
+            var tile_3_0 = splitLogData[3].split(":")[1];
             
-            var tile_0_1 = splitLogData[24].split(":")[1];
-            var tile_1_1 = splitLogData[25].split(":")[1];
-            var tile_2_1 = splitLogData[26].split(":")[1];
-            var tile_3_1 = splitLogData[27].split(":")[1];
+            var tile_0_1 = splitLogData[4].split(":")[1];
+            var tile_1_1 = splitLogData[5].split(":")[1];
+            var tile_2_1 = splitLogData[6].split(":")[1];
+            var tile_3_1 = splitLogData[7].split(":")[1];
             
-            var tile_0_2 = splitLogData[28].split(":")[1];
-            var tile_1_2 = splitLogData[29].split(":")[1];
-            var tile_2_2 = splitLogData[30].split(":")[1];
-            var tile_3_2 = splitLogData[31].split(":")[1];
+            var tile_0_2 = splitLogData[8].split(":")[1];
+            var tile_1_2 = splitLogData[9].split(":")[1];
+            var tile_2_2 = splitLogData[10].split(":")[1];
+            var tile_3_2 = splitLogData[11].split(":")[1];
             
-            var tile_0_3 = splitLogData[32].split(":")[1];
-            var tile_1_3 = splitLogData[33].split(":")[1];
-            var tile_2_3 = splitLogData[34].split(":")[1];
-            var tile_3_3 = splitLogData[35].split(":")[1];
+            var tile_0_3 = splitLogData[12].split(":")[1];
+            var tile_1_3 = splitLogData[13].split(":")[1];
+            var tile_2_3 = splitLogData[14].split(":")[1];
+            var tile_3_3 = splitLogData[15].split(":")[1];
             
             // Update the HTML text databound properties
             self.cell0_0(tile_0_0);
