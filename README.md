@@ -11,9 +11,6 @@ or manually using this URL:
 
     https://github.com/DoubleStrike/OctoPrint-SegmentedBed/archive/master.zip
 
-**TODO:** Describe how to install your plugin, if more needs to be done than just installing it via pip or through
-the plugin manager.
-
 ## Configuration
 
-**TODO:** Describe your plugin's configuration options (if any).
+None at the moment. Hope to add color coding options and allow selection of number of tiles to allow use of MK4 or other future printers.
