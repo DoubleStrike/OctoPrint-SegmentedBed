@@ -13,54 +13,11 @@ $(function() {
         var classOff = "tileDisabled";
         var classHeat = "tileHeating";
         var classCool = "tileCooling";
-        var alertOnce = false;
+        var reorderMatrix = [36, 39, 42, 45, 24, 27, 30, 33, 12, 15, 18, 21, 0, 3, 6, 9];
         
-        // Data model should contain Name, row?, column?, currentTemp, setTemp
+        // Data model should contain Name, currentTemp, setTemp
+        self.myObservableArray = ko.observableArray(); 
         
-        // These are the observables for databinding to the HTML cell contents ----------
-        self.cell0_0 = ko.observable();
-        self.cell1_0 = ko.observable();
-        self.cell2_0 = ko.observable();
-        self.cell3_0 = ko.observable();
-        
-        self.cell0_1 = ko.observable();
-        self.cell1_1 = ko.observable();
-        self.cell2_1 = ko.observable();
-        self.cell3_1 = ko.observable();
-        
-        self.cell0_2 = ko.observable();
-        self.cell1_2 = ko.observable();
-        self.cell2_2 = ko.observable();
-        self.cell3_2 = ko.observable();
-        
-        self.cell0_3 = ko.observable();
-        self.cell1_3 = ko.observable();
-        self.cell2_3 = ko.observable();
-        self.cell3_3 = ko.observable();
-        // ------------------------------------------------------------------------------
-        
-        // These are the observables for databinding to the CSS class -------------------
-        self.cell0_0class = ko.observable();
-        self.cell1_0class = ko.observable();
-        self.cell2_0class = ko.observable();
-        self.cell3_0class = ko.observable();
-        
-        self.cell0_1class = ko.observable();
-        self.cell1_1class = ko.observable();
-        self.cell2_1class = ko.observable();
-        self.cell3_1class = ko.observable();
-        
-        self.cell0_2class = ko.observable();
-        self.cell1_2class = ko.observable();
-        self.cell2_2class = ko.observable();
-        self.cell3_2class = ko.observable();
-        
-        self.cell0_3class = ko.observable();
-        self.cell1_3class = ko.observable();
-        self.cell2_3class = ko.observable();
-        self.cell3_3class = ko.observable();
-        // ------------------------------------------------------------------------------
-
         self.fromCurrentData = function (data) {
             if (!data) return;
             if (!data.logs) return;
@@ -88,52 +45,30 @@ $(function() {
             //      in that order. So we shorthand this by lopping thru every 3 items and offsetting the indices.
             //      This is how we fill the dictionary.
             var dictionaryOfTemps = {};
+            self.myObservableArray.removeAll();
             
+            // Build the array of information to use for the next step
             for (i = 0; i < splitArray.length; i += 3) {
-                dictionaryOfTemps[splitArray[i]] = { Current: splitArray[i + 1], Target: splitArray[i + 2] };
+                let x = splitArray[i].substring(2, 3);
+                let y = splitArray[i].substring(4, 5);
+                let id = (3 - Number(y)) * 4 + Number(x) + 1;
+                dictionaryOfTemps[splitArray[i]] = { Current: splitArray[i + 1], Target: splitArray[i + 2], ID: id };
             }
-            
-            // Update the HTML text databound properties
-            self.cell0_0(dictionaryOfTemps["B_0_0"].Current + "/" + dictionaryOfTemps["B_0_0"].Target);
-            self.cell1_0(dictionaryOfTemps["B_1_0"].Current + "/" + dictionaryOfTemps["B_1_0"].Target);
-            self.cell2_0(dictionaryOfTemps["B_2_0"].Current + "/" + dictionaryOfTemps["B_2_0"].Target);
-            self.cell3_0(dictionaryOfTemps["B_3_0"].Current + "/" + dictionaryOfTemps["B_3_0"].Target);
-            
-            self.cell0_1(dictionaryOfTemps["B_0_1"].Current + "/" + dictionaryOfTemps["B_0_1"].Target);
-            self.cell1_1(dictionaryOfTemps["B_1_1"].Current + "/" + dictionaryOfTemps["B_1_1"].Target);
-            self.cell2_1(dictionaryOfTemps["B_2_1"].Current + "/" + dictionaryOfTemps["B_2_1"].Target);
-            self.cell3_1(dictionaryOfTemps["B_3_1"].Current + "/" + dictionaryOfTemps["B_3_1"].Target);
-            
-            self.cell0_2(dictionaryOfTemps["B_0_2"].Current + "/" + dictionaryOfTemps["B_0_2"].Target);
-            self.cell1_2(dictionaryOfTemps["B_1_2"].Current + "/" + dictionaryOfTemps["B_1_2"].Target);
-            self.cell2_2(dictionaryOfTemps["B_2_2"].Current + "/" + dictionaryOfTemps["B_2_2"].Target);
-            self.cell3_2(dictionaryOfTemps["B_3_2"].Current + "/" + dictionaryOfTemps["B_3_2"].Target);
-            
-            self.cell0_3(dictionaryOfTemps["B_0_3"].Current + "/" + dictionaryOfTemps["B_0_3"].Target);
-            self.cell1_3(dictionaryOfTemps["B_1_3"].Current + "/" + dictionaryOfTemps["B_1_3"].Target);
-            self.cell2_3(dictionaryOfTemps["B_2_3"].Current + "/" + dictionaryOfTemps["B_2_3"].Target);
-            self.cell3_3(dictionaryOfTemps["B_3_3"].Current + "/" + dictionaryOfTemps["B_3_3"].Target);
 
-            // Update the CSS style databound properties
-            if (dictionaryOfTemps["B_0_0"].Target == "0.00") self.cell0_0class(classOff); else { if (dictionaryOfTemps["B_0_0"].Current < dictionaryOfTemps["B_0_0"].Target) self.cell0_0class(classHeat); else self.cell0_0class(classCool); }
-            if (dictionaryOfTemps["B_1_0"].Target == "0.00") self.cell1_0class(classOff); else { if (dictionaryOfTemps["B_1_0"].Current < dictionaryOfTemps["B_1_0"].Target) self.cell1_0class(classHeat); else self.cell1_0class(classCool); }
-            if (dictionaryOfTemps["B_2_0"].Target == "0.00") self.cell2_0class(classOff); else { if (dictionaryOfTemps["B_2_0"].Current < dictionaryOfTemps["B_2_0"].Target) self.cell2_0class(classHeat); else self.cell2_0class(classCool); }
-            if (dictionaryOfTemps["B_3_0"].Target == "0.00") self.cell3_0class(classOff); else { if (dictionaryOfTemps["B_3_0"].Current < dictionaryOfTemps["B_3_0"].Target) self.cell3_0class(classHeat); else self.cell3_0class(classCool); }
-
-            if (dictionaryOfTemps["B_0_1"].Target == "0.00") self.cell0_1class(classOff); else { if (dictionaryOfTemps["B_0_1"].Current < dictionaryOfTemps["B_0_1"].Target) self.cell0_1class(classHeat); else self.cell0_1class(classCool); }
-            if (dictionaryOfTemps["B_1_1"].Target == "0.00") self.cell1_1class(classOff); else { if (dictionaryOfTemps["B_1_1"].Current < dictionaryOfTemps["B_1_1"].Target) self.cell1_1class(classHeat); else self.cell1_1class(classCool); }
-            if (dictionaryOfTemps["B_2_1"].Target == "0.00") self.cell2_1class(classOff); else { if (dictionaryOfTemps["B_2_1"].Current < dictionaryOfTemps["B_2_1"].Target) self.cell2_1class(classHeat); else self.cell2_1class(classCool); }
-            if (dictionaryOfTemps["B_3_1"].Target == "0.00") self.cell3_1class(classOff); else { if (dictionaryOfTemps["B_3_1"].Current < dictionaryOfTemps["B_3_1"].Target) self.cell3_1class(classHeat); else self.cell3_1class(classCool); }
-
-            if (dictionaryOfTemps["B_0_2"].Target == "0.00") self.cell0_2class(classOff); else { if (dictionaryOfTemps["B_0_2"].Current < dictionaryOfTemps["B_0_2"].Target) self.cell0_2class(classHeat); else self.cell0_2class(classCool); }
-            if (dictionaryOfTemps["B_1_2"].Target == "0.00") self.cell1_2class(classOff); else { if (dictionaryOfTemps["B_1_2"].Current < dictionaryOfTemps["B_1_2"].Target) self.cell1_2class(classHeat); else self.cell1_2class(classCool); }
-            if (dictionaryOfTemps["B_2_2"].Target == "0.00") self.cell2_2class(classOff); else { if (dictionaryOfTemps["B_2_2"].Current < dictionaryOfTemps["B_2_2"].Target) self.cell2_2class(classHeat); else self.cell2_2class(classCool); }
-            if (dictionaryOfTemps["B_3_2"].Target == "0.00") self.cell3_2class(classOff); else { if (dictionaryOfTemps["B_3_2"].Current < dictionaryOfTemps["B_3_2"].Target) self.cell3_2class(classHeat); else self.cell3_2class(classCool); }
-
-            if (dictionaryOfTemps["B_0_3"].Target == "0.00") self.cell0_3class(classOff); else { if (dictionaryOfTemps["B_0_3"].Current < dictionaryOfTemps["B_0_3"].Target) self.cell0_3class(classHeat); else self.cell0_3class(classCool); }
-            if (dictionaryOfTemps["B_1_3"].Target == "0.00") self.cell1_3class(classOff); else { if (dictionaryOfTemps["B_1_3"].Current < dictionaryOfTemps["B_1_3"].Target) self.cell1_3class(classHeat); else self.cell1_3class(classCool); }
-            if (dictionaryOfTemps["B_2_3"].Target == "0.00") self.cell2_3class(classOff); else { if (dictionaryOfTemps["B_2_3"].Current < dictionaryOfTemps["B_2_3"].Target) self.cell2_3class(classHeat); else self.cell2_3class(classCool); }
-            if (dictionaryOfTemps["B_3_3"].Target == "0.00") self.cell3_3class(classOff); else { if (dictionaryOfTemps["B_3_3"].Current < dictionaryOfTemps["B_3_3"].Target) self.cell3_3class(classHeat); else self.cell3_3class(classCool); }
+            // TODO: There has GOT to be a better way to do this sorting.
+            // Finally, remap the tile order to be correct and add to the ObservableArray
+            for (j = 0; j < reorderMatrix.length; j++) {
+                let tileName = splitArray[reorderMatrix[j]];
+                let currentTemp = splitArray[reorderMatrix[j] + 1];
+                let targetTemp = splitArray[reorderMatrix[j] + 2];
+                let newStyle = "";
+                if (targetTemp == "0.00") {
+                    newStyle = classOff;
+                } else {
+                    newStyle = (Number(currentTemp) < Number(targetTemp)) ? classHeat : classCool;
+                }
+                self.myObservableArray.push({ Tile: tileName, Current: currentTemp, Target: targetTemp, Style: newStyle, ID: self.myObservableArray().length });
+            }
         }
     }
 

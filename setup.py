@@ -14,11 +14,11 @@ plugin_package = "octoprint_segmentedbed"
 plugin_name = "Segmented Bed Plugin"
 
 # The plugin's version. Can be overwritten within OctoPrint's internal data via __plugin_version__ in the plugin module
-plugin_version = "0.1.0"
+plugin_version = "1.1.0"
 
 # The plugin's description. Can be overwritten within OctoPrint's internal data via __plugin_description__ in the plugin
 # module
-plugin_description = "A plugin to display segmented heatbed temps for Prusa XL and Mk4 printers"
+plugin_description = "A plugin to display segmented heatbed temps for Prusa XL and (eventually) Mk4 printers"
 
 # The plugin's author. Can be overwritten within OctoPrint's internal data via __plugin_author__ in the plugin module
 plugin_author = "DoubleStrike"
