@@ -8,12 +8,7 @@
     align-content: normal;
 }
 
-.flex-items {
-    border: 0px solid purple;
-}
-
 .x-axis {
-    border: none;
     font-weight: bold;
     padding: 15px 0 0 0;
     text-align: center;
@@ -27,12 +22,16 @@
 
 /* Segmented bed grid */
 div#heatbed {
-    border: 5px solid #000000;
+    /*border-color: black;*/
+    border-style: solid;
+    border-width: 5px;
     text-align: center;
 }
 
 div#heatbed > div {
-    border: 1.5px dashed #000000;
+    /*border-color: black;*/
+    border-style: dashed;
+    border-width: 1.5px;
     height: 90px;
     width: 90px;
     text-align: center;
@@ -40,10 +39,6 @@ div#heatbed > div {
     margin: 0;
     padding: 0;
     display: grid;
-}
-
-div#heatbed > div > span {
-    border: 0px dotted #eeeeee;
 }
 
 .grid-container {
