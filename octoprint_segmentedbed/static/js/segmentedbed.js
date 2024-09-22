@@ -33,9 +33,12 @@ $(function() {
             T3:24.00/0.00 T4:23.00/0.00 T5:6.00/0.00 @:0 B@:0 HBR@:0 @0:0 @1:0 @2:0 @3:0 @4:0 @5:0 B_0_0:21.80/0.00 B_1_0:21.90/0.00 
             B_2_0:21.90/0.00 B_3_0:22.00/0.00 B_0_1:22.20/0.00 B_1_1:22.20/0.00 B_2_1:22.30/0.00 B_3_1:22.10/0.00 B_0_2:22.20/0.00 
             B_1_2:22.40/0.00 B_2_2:22.40/0.00 B_3_2:22.30/0.00 B_0_3:22.30/0.00 B_1_3:22.20/0.00 B_2_3:22.40/0.00 B_3_3:22.40/0.00
+
+            For reference, the T is active tool temperature, B is average bed temp, C is heated chamber temp, @ is heater power,
+            HBR@ is heatbreak temp, T0-T5 are the toolhead temps.  Sourced from "lib/Marlin/Marlin/src/module/temperature.cpp"
             */
             
-            // Get the portion of the line with temperatures
+            // Get the portion of the line with temperatures, if the line is valid only
             if (newLogData.search("@5:0") < 10) return;
             var preParseData = newLogData.trim().split("@5:0 ")[1];
             
@@ -43,8 +46,8 @@ $(function() {
             var splitArray = preParseData.split(/[\s\:\/]+/);
             if (splitArray.length < 48) return;
 
-            // Increment thru ever 3rd entry since there are 3 datapoints per tile (name, currentTemp, targetTemp)
-            //      in that order. So we shorthand this by lopping thru every 3 items and offsetting the indices.
+            // Increment thru every 3rd entry since there are 3 datapoints per tile (name, currentTemp, targetTemp)
+            //      in that order. So we shorthand this by looping thru every 3 items and offsetting the indices.
             //      This is how we fill the dictionary.
             var dictionaryOfTemps = {};
             self.heatbedTileArray.removeAll();
