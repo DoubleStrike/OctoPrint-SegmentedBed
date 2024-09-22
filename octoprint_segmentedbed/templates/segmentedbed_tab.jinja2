@@ -1,3 +1,7 @@
+<h3>Segmented Heat Bed Tiles</h3>
+<div class="subheading">Each tile shows the tile name, the current (Now) temperature, and the target (Tgt) temperature in that order.</div>
+<div class="explanation">Inactive tiles with a target temp of 0 are grayed out.</div>
+
 <!-- High-level positioning container -->
 <div class="flex-container">
     
@@ -8,10 +12,6 @@
     
     <!-- Right column container -->
     <div class="flex-items">
-        <h3>Segmented Heat Bed Tiles</h3>
-        <div class="subheading">Each tile shows the tile name, the current (Now) temperature, and the target (Tgt) temperature in that order.</div>
-        <div class="explanation">Inactive tiles with a target temp of 0 are grayed out.</div>
-        
         <div data-bind="foreach: heatbedTileArray" class="grid-container" id="heatbed">
             <div data-bind="css: Style">
                 <span data-bind="text: Tile"></span>

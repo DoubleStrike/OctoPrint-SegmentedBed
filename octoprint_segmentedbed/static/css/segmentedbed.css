@@ -15,15 +15,13 @@
 .x-axis {
     border: none;
     font-weight: bold;
-    padding: 15px 0;
+    padding: 15px 0 0 0;
     text-align: center;
 }
 
 .y-axis {
-    border: none;
     font-weight: bold;
-    padding: 330px 20px;
-    text-align: center;
+    padding: 175px 20px 0 20px;
 }
 
 
@@ -80,10 +78,10 @@ div#heatbed > div > span {
 
 /* Generic styles */
 .subheading {
-    max-width: 350px;
+    font-weight: normal;
+}
 
-}.explanation {
-    max-width: 350px;
+.explanation {
     padding-bottom: 20px;
     padding-top: 20px;
 }
