@@ -19,6 +19,9 @@ $(function() {
         // Array data model: ID, Tile, Current, Target, Style
         self.heatbedTileArray = ko.observableArray();
 
+        // Average bed temp
+        self.AvgBedTemp = ko.observable();
+
         self.fromCurrentData = function (data) {
             if (!data) return;
             if (!data.logs) return;
@@ -41,6 +44,10 @@ $(function() {
             // Get the portion of the line with temperatures, if the line is valid only
             if (newLogData.search("@5:0") < 10) return;
             var preParseData = newLogData.trim().split("@5:0 ")[1];
+
+            // Grab the average bed temp reading
+            var avgTemperatureReported = (newLogData.trim().substring(7).split(" ")[1]).split(":")[1];
+            self.AvgBedTemp(avgTemperatureReported);
             
             // Split on spaces (\s), colons, and slashes - should result in tile_count * 3 array elements (48 for the XL)
             var splitArray = preParseData.split(/[\s\:\/]+/);
