@@ -59,7 +59,8 @@ $(function() {
             var dictionaryOfTemps = {};
             self.heatbedTileArray.removeAll();
             
-            // Build the array of information to use for the next step
+            // The dictionary is used here to store the tile data from the serial response.
+            // This is necessary to later re-order the data based on the reorderMatrix.
             for (i = 0; i < splitArray.length; i += 3) {
                 let x = splitArray[i].substring(2, 3);
                 let y = splitArray[i].substring(4, 5);
@@ -67,20 +68,22 @@ $(function() {
                 dictionaryOfTemps[splitArray[i]] = { Current: splitArray[i + 1], Target: splitArray[i + 2], ID: id };
             }
 
-            // TODO: There has GOT to be a better way to do this sorting.
-            // Finally, remap the tile order to be correct and add to the ObservableArray
-            for (j = 0; j < reorderMatrix.length; j++) {
-                let tileName = splitArray[reorderMatrix[j]];
-                let currentTemp = splitArray[reorderMatrix[j] + 1];
-                let targetTemp = splitArray[reorderMatrix[j] + 2];
+            // Use the reorderMatrix to map the tile data to the correct positions
+            // in the observable array used by the knockout template.
+            reorderMatrix.forEach(function(index) {
+                let tileName = splitArray[index];
+                let currentTemp = splitArray[index + 1];
+                let targetTemp = splitArray[index + 2];
                 let newStyle = "";
+            
                 if (targetTemp == "0.00") {
                     newStyle = classOff;
-                } else if(Number(currentTemp) == Number(targetTemp)) {
+                } else if (Number(currentTemp) == Number(targetTemp)) {
                     newStyle = "";
                 } else {
                     newStyle = (Number(currentTemp) < Number(targetTemp)) ? classHeat : classCool;
                 }
+            
                 self.heatbedTileArray.push({
                     ID: self.heatbedTileArray().length,
                     Tile: tileName,
@@ -88,19 +91,20 @@ $(function() {
                     Target: targetTemp,
                     Style: newStyle
                 });
-            }
+            });
         }
     }
+});
 
-    /* view model class, parameters for constructor, container to bind to
-     */
-    OCTOPRINT_VIEWMODELS.push({
-        construct: SegmentedbedViewModel,
 
-        // ViewModels your plugin depends on, e.g. loginStateViewModel, settingsViewModel, ...
-        dependencies: [ "terminalViewModel" ],
-        
-        // Elements to bind to, e.g. #settings_plugin_segmentedbed, #tab_plugin_segmentedbed, ...
-        elements: [ "#tab_plugin_segmentedbed" ]
-    });
+/* view model class, parameters for constructor, container to bind to
+ */
+OCTOPRINT_VIEWMODELS.push({
+    construct: SegmentedbedViewModel,
+
+    // ViewModels your plugin depends on, e.g. loginStateViewModel, settingsViewModel, ...
+    dependencies: [ "terminalViewModel" ],
+    
+    // Elements to bind to, e.g. #settings_plugin_segmentedbed, #tab_plugin_segmentedbed, ...
+    elements: [ "#tab_plugin_segmentedbed" ]
 });
