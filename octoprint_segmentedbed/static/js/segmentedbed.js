@@ -7,7 +7,7 @@
  * Author: DoubleStrike
  * License: AGPLv3
  */
-$(function() {
+$(function () {
     function SegmentedbedViewModel(parameters) {
         var self = this;
         var classOff = "tileDisabled";
@@ -69,8 +69,8 @@ $(function() {
             }
 
             // Use the reorderMatrix to map the tile data to the correct positions
-            // in the observable array used by the knockout template.
-            reorderMatrix.forEach(function(index) {
+            // in the observable array used by the knockout jinja2 template.
+            reorderMatrix.forEach(function (index) {
                 let tileName = splitArray[index];
                 let currentTemp = splitArray[index + 1];
                 let targetTemp = splitArray[index + 2];
@@ -94,17 +94,17 @@ $(function() {
             });
         }
     }
-});
 
 
-/* view model class, parameters for constructor, container to bind to
- */
-OCTOPRINT_VIEWMODELS.push({
-    construct: SegmentedbedViewModel,
+    /* view model class, parameters for constructor, container to bind to
+     */
+    OCTOPRINT_VIEWMODELS.push({
+        construct: SegmentedbedViewModel,
 
-    // ViewModels your plugin depends on, e.g. loginStateViewModel, settingsViewModel, ...
-    dependencies: [ "terminalViewModel" ],
+        // ViewModels your plugin depends on, e.g. loginStateViewModel, settingsViewModel, ...
+        dependencies: ["terminalViewModel"],
     
-    // Elements to bind to, e.g. #settings_plugin_segmentedbed, #tab_plugin_segmentedbed, ...
-    elements: [ "#tab_plugin_segmentedbed" ]
+        // Elements to bind to, e.g. #settings_plugin_segmentedbed, #tab_plugin_segmentedbed, ...
+        elements: ["#tab_plugin_segmentedbed"]
+    });
 });
