@@ -30,7 +30,7 @@ class SegmentedbedPlugin(octoprint.plugin.SettingsPlugin,
     def get_update_information(self):
         return {
             "segmentedbed": {
-                "displayName": "Segmentedbed Plugin",
+                "displayName": "Segmented Bed Plugin",
                 "displayVersion": self._plugin_version,
 
                 # version check: github repository
