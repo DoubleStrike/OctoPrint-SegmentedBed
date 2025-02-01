@@ -62,3 +62,7 @@ def __plugin_load__():
     __plugin_hooks__ = {
         "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information
     }
+
+# Opt into autoescaping to get ready for OP 1.13
+def is_template_autoescaped(self):
+  return True
