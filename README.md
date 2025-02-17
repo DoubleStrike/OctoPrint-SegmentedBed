@@ -8,7 +8,7 @@ Tiles are shown in one of 4 colors:
 | Color       | Meaning      | Description                                                                                                              |
 | ----------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
 | Transparent | Inactive     | The tile is active and has reached the target temperature. <br/> *The background color of the page will show through.*   |
-| Silver/grey | Temp Reached | The tile is disabled. This means it is not part of the active print area that was defined by the `M555` command.         |
+| Silver/grey | Temp Reached | The tile is disabled. <br/> *This means it is not part of the active print area that was defined by the `M555` command.* |
 | Red         | Heating      | The tile is below the target temperature and is heating up.                                                              |
 | Blue        | Cooling      | The tile is above the target temperature and is cooling down.                                                            |
 
