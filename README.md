@@ -7,8 +7,8 @@ A plugin to display individual segmented bed temps in real-time for Prusa XL pri
 Tiles are shown in one of 4 colors:
 | Color       | Meaning      | Description                                                                                                              |
 | ----------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| Transparent | Inactive     | The tile is active and has reached the target temperature. <br/> *The background color of the page will show through.*   |
-| Silver/grey | Temp Reached | The tile is disabled. <br/> *This means it is not part of the active print area that was defined by the `M555` command.* |
+| Silver/grey | Inactive     | The tile is disabled. <br/> *This means it is not part of the active print area that was defined by the `M555` command.* |
+| Transparent | Temp Reached | The tile is active and has reached the target temperature. <br/> *The background color of the page will show through.*   |
 | Red         | Heating      | The tile is below the target temperature and is heating up.                                                              |
 | Blue        | Cooling      | The tile is above the target temperature and is cooling down.                                                            |
 
