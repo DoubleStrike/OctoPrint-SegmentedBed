@@ -31,3 +31,9 @@ or manually using this URL:
 ## Configuration
 
 None at the moment. Hope to add color coding options and allow selection of number of tiles to allow use of MK4 or other future printers.
+
+## To-Do
+
+* Add configurable color options
+* Add a configurable tolerance value used in the "temp reached" calculation, such that being within x.x degrees of the target value is considered "good enough"
+* Add better heatmapping with a color gradient from cool to neutral to hot
