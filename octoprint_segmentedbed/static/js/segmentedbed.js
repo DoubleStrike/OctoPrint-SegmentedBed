@@ -20,6 +20,9 @@ $(function () {
         self.heatbedTileArray = ko.observableArray();
 
         // Average bed temp
+        self.HotEndTemp = ko.observable();
+
+        // Average bed temp
         self.AvgBedTemp = ko.observable();
 
         self.fromCurrentData = function (data) {
@@ -30,7 +33,7 @@ $(function () {
             var newLogData = data.logs[0];
             if (typeof newLogData == 'undefined') return;
             
-            // As of firmware 6.1.3+7898 the expected line is in this format (without line wraps obviously):
+            // As of firmware 6.2.0+8816 the expected line is in this format (without line wraps obviously):
             /*
             Recv:  T:6.00/0.00 B:22.17/0.00 C:-30.00/0.00 X5:6.00/36.00 A:35.81/0.00 T0:22.00/0.00 T1:25.00/0.00 T2:23.00/0.00 
             T3:24.00/0.00 T4:23.00/0.00 T5:6.00/0.00 @:0 B@:0 HBR@:0 @0:0 @1:0 @2:0 @3:0 @4:0 @5:0 B_0_0:21.80/0.00 B_1_0:21.90/0.00 
@@ -45,6 +48,10 @@ $(function () {
             if (newLogData.search("@5:0") < 10) return;
             var preParseData = newLogData.trim().split("@5:0 ")[1];
 
+            // Grab the hot-end temp reading
+            var toolTemp = (newLogData.trim().substring(7).split(" ")[0]).split(":")[1];
+            self.HotEndTemp(toolTemp);
+            
             // Grab the average bed temp reading
             var avgTemperatureReported = (newLogData.trim().substring(7).split(" ")[1]).split(":")[1];
             self.AvgBedTemp(avgTemperatureReported);
@@ -78,7 +85,7 @@ $(function () {
             
                 if (targetTemp == "0.00") {
                     newStyle = classOff;
-                } else if (Number(currentTemp) == Number(targetTemp)) {
+                } else if ((Number(currentTemp) <= Number(targetTemp) + temperatureTolerance) && (Number(currentTemp) >= Number(targetTemp) - temperatureTolerance)) {
                     newStyle = "";
                 } else {
                     newStyle = (Number(currentTemp) < Number(targetTemp)) ? classHeat : classCool;
