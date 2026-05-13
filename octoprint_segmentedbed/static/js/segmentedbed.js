@@ -141,6 +141,7 @@ $(function () {
             // Capture current log line
             var newLogData = data.logs[0];
             if (typeof newLogData == 'undefined') return;
+            newLogData = newLogData.trim();
             
             // As of firmware 6.2.6+8948 the expected line is in this format (without line wraps obviously):
             /*
@@ -155,14 +156,14 @@ $(function () {
             
             // Get the portion of the line with temperatures, if the line is valid only
             if (newLogData.search("@5:0") < 10) return;
-            var preParseData = newLogData.trim().split("@5:0 ")[1];
+            var preParseData = newLogData.split("@5:0 ")[1];
 
             // Grab the hot-end temp reading
-            var toolTemp = (newLogData.trim().substring(7).split(" ")[0]).split(":")[1];
+            var toolTemp = (newLogData.substring(7).split(" ")[0]).split(":")[1];
             self.HotEndTemp(toolTemp);
             
             // Grab the average bed temp reading
-            var avgTemperatureReported = (newLogData.trim().substring(7).split(" ")[1]).split(":")[1];
+            var avgTemperatureReported = (newLogData.substring(7).split(" ")[1]).split(":")[1];
             self.AvgBedTemp(avgTemperatureReported);
             
             // Split on spaces (\s), colons, and slashes - should result in tile_count * 3 array elements (48 for the XL)
