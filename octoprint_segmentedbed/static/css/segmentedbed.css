@@ -63,18 +63,6 @@ div#heatbed > div {
     vertical-align: middle;
 }
 
-.tileCooling {
-    background-color:steelblue;
-    color: white;
-    vertical-align: middle;
-}
-
-.tileHeating {
-    background-color: salmon;
-    color: black;
-    vertical-align: middle;
-}
-
 
 /* Generic styles */
 .subheading {
