@@ -10,7 +10,8 @@ shows blue=cold and red=hot. This way, the heatmap tracks more closely with the 
 is 10 degrees C. Any tile farther from the target than that will show maximum hot or cold color.
 
 
-![SegBed1](https://github.com/user-attachments/assets/6bb04314-4757-43cd-8cd4-a1732a97ff85)
+<img width="807" height="701" alt="image" src="https://github.com/user-attachments/assets/20ae4d88-ab81-4cbe-9a6b-38ba4f11a385" />
+
 
 Tiles are shown in one of 4 states:
 | Color       | Meaning      | Description                                                                                                              |
@@ -25,7 +26,8 @@ Tiles are shown in one of 4 states:
 &nbsp;
 
 It also plays nicely with UICustomizer and dark themes:
-![SegBed UICust](https://github.com/user-attachments/assets/32d3f6af-1d2e-49f4-acd5-21825cecc697)
+<img width="711" height="693" alt="image" src="https://github.com/user-attachments/assets/42c5eb73-84f2-450f-a4c6-937cade05a22" />
+
 
 
 
