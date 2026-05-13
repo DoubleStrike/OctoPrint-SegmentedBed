@@ -3,7 +3,8 @@ from __future__ import absolute_import
 
 import octoprint.plugin
 
-class SegmentedbedPlugin(octoprint.plugin.SettingsPlugin,
+class SegmentedbedPlugin(
+    octoprint.plugin.SettingsPlugin,
     octoprint.plugin.AssetPlugin,
     octoprint.plugin.TemplatePlugin,
     octoprint.plugin.StartupPlugin
@@ -12,9 +13,18 @@ class SegmentedbedPlugin(octoprint.plugin.SettingsPlugin,
     ##~~ SettingsPlugin mixin
 
     def get_settings_defaults(self):
-        return {
-            # No default settings for now - reserved for future use
-        }
+        return dict(
+            hot_color = "#ff4444",
+            cold_color = "#4488ff",
+            use_custom_colors = False
+        )
+        
+    ##~~ TemplatePlugin mixin
+    
+    def get_template_configs(self):
+        return [
+            dict(type="settings", custom_bindings=False)
+        ]
 
     ##~~ AssetPlugin mixin
 

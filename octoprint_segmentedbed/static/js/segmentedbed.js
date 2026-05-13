@@ -16,6 +16,9 @@ $(function () {
         var temperatureTolerance = 0.3;
         var reorderMatrix = [36, 39, 42, 45, 24, 27, 30, 33, 12, 15, 18, 21, 0, 3, 6, 9];
 
+        self.settings = parameters[0]; // terminalViewModel
+        self.settings = parameters[1]; // settingsViewModel
+
         // Grab the current colors from the theme (if applicable)
         const themeColors = {
             neutral: getComputedStyle(document.body).backgroundColor ||
@@ -26,10 +29,35 @@ $(function () {
 
         const roundToTwo = (num) => Math.round(num * 100) / 100;
 
+        // Helpers to get user-selected or theme colors
+        function pluginSettings() {
+            try {
+                return self.settings.settings.plugins.segmentedbed;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function getHotColor() {
+            const ps = pluginSettings();
+            if (ps && ps.use_custom_colors && ps.use_custom_colors()) {
+                return ps.hot_color();
+            }
+            return themeColors.hot;
+        }
+
+        function getColdColor() {
+            const ps = pluginSettings();
+            if (ps && ps.use_custom_colors && ps.use_custom_colors()) {
+                return ps.cold_color();
+            }
+            return themeColors.cold;
+        }
+
         // Convert a tile temperature to a blue → white → red gradient
         function tempToColor(current, target) {
-            const hotBase = themeColors.hot || "#ff4444";
-            const coldBase = themeColors.cold || "#4488ff";
+            const hotBase = getHotColor();
+            const coldBase = getColdColor();
 
             // Normalize temperature difference
             let delta = current - target;
@@ -201,7 +229,7 @@ $(function () {
         construct: SegmentedbedViewModel,
 
         // ViewModels your plugin depends on, e.g. loginStateViewModel, settingsViewModel, ...
-        dependencies: ["terminalViewModel"],
+        dependencies: ["terminalViewModel", "settingsViewModel"],
     
         // Elements to bind to, e.g. #settings_plugin_segmentedbed, #tab_plugin_segmentedbed, ...
         elements: ["#tab_plugin_segmentedbed"]

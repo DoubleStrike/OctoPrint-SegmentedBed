@@ -1,0 +1,33 @@
+<div class="tab-pane" id="settings_plugin_segmentedbed" data-bind="with: settings.plugins.segmentedbed">
+
+    <h3>Segmented Bed Display Settings</h3>
+
+    <div class="form-group">
+        <label class="control-label">
+            <input type="checkbox" data-bind="checked: use_custom_colors">
+            Use custom hot/cold colors
+        </label>
+        <p class="help-block">
+            When enabled, the plugin will use your selected colors instead of the theme’s accent colors.
+        </p>
+    </div>
+
+    <div class="form-group" data-bind="visible: use_custom_colors">
+        <label class="control-label">Hot color</label>
+        <input type="color"
+               class="form-control"
+               style="width: 80px; padding: 0;"
+               data-bind="value: hot_color">
+        <p class="help-block">Color used when a tile is hotter than its target.</p>
+    </div>
+
+    <div class="form-group" data-bind="visible: use_custom_colors">
+        <label class="control-label">Cold color</label>
+        <input type="color"
+               class="form-control"
+               style="width: 80px; padding: 0;"
+               data-bind="value: cold_color">
+        <p class="help-block">Color used when a tile is colder than its target.</p>
+    </div>
+
+</div>
