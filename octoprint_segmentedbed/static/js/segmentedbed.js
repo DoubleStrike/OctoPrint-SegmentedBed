@@ -15,28 +15,118 @@ $(function () {
         var classCool = "tileCooling";
         var temperatureTolerance = 0.3;
         var reorderMatrix = [36, 39, 42, 45, 24, 27, 30, 33, 12, 15, 18, 21, 0, 3, 6, 9];
-        
+
+        // Grab the current colors from the theme (if applicable)
+        const themeColors = {
+            neutral: getComputedStyle(document.body).backgroundColor ||
+                getComputedStyle(document.documentElement).getPropertyValue("--color-background").trim() || "#222222",
+            hot: getComputedStyle(document.documentElement).getPropertyValue("--color-accent").trim() || "#ff4444",
+            cold: getComputedStyle(document.documentElement).getPropertyValue("--color-primary").trim() || "#4488ff"
+        };
+
         // Convert a tile temperature to a blue → white → red gradient
         function tempToColor(current, target) {
+            // Use cached theme colors
+            const neutralBase = themeColors.neutral;
+            const hotBase = themeColors.hot;
+            const coldBase = themeColors.cold;
+
+            // Convert hex or rgb → HSL
+            const neutralHSL = toHSL(neutralBase);
+            const hotHSL = toHSL(hotBase);
+            const coldHSL = toHSL(coldBase);
+
+            // Compute normalized temperature difference
             let delta = current - target;
-            let maxDelta = 15;
+            let maxDelta = 20;
             delta = Math.max(-maxDelta, Math.min(maxDelta, delta));
             let norm = delta / maxDelta;
 
+            // Blend using HSL interpolation
+            let h, s, l;
             if (norm < 0) {
-                // Below target: blue → white
-                let t = norm + 1; // -1→0, 0→1
-                let r = 255 * t;
-                let g = 255 * t;
-                let b = 255;
-                return "rgb(" + r + "," + g + "," + b + ")";
+                // colder than target → neutral → blue
+                const t = Math.abs(norm);
+                h = neutralHSL.h + (coldHSL.h - neutralHSL.h) * t;
+                s = neutralHSL.s + (coldHSL.s - neutralHSL.s) * t;
+                l = neutralHSL.l + (coldHSL.l - neutralHSL.l) * t;
             } else {
-                // Above target: white → red
-                let t = norm; // 0→0, 1→1
-                let r = 255;
-                let g = 255 * (1 - t);
-                let b = 255 * (1 - t);
-                return "rgb(" + r + "," + g + "," + b + ")";            }
+                // hotter than target → neutral → red
+                const t = norm;
+                h = neutralHSL.h + (hotHSL.h - neutralHSL.h) * t;
+                s = neutralHSL.s + (hotHSL.s - neutralHSL.s) * t;
+                l = neutralHSL.l + (hotHSL.l - neutralHSL.l) * t;
+            }
+
+            // Adjust brightness for dark/light theme
+            const isDark = document.body.classList.contains("theme-dark");
+            if (isDark) l *= 0.7; // dim for dark mode
+            else l = Math.min(l * 1.1, 100); // brighten for light mode
+
+            return `hsl(${h}, ${s}%, ${l}%)`;
+        }
+
+        // Convert hex or rgb → HSL
+        function toHSL(color) {
+            let r, g, b;
+            if (color.startsWith("rgb")) {
+                [r, g, b] = color.match(/\d+/g).map(Number);
+            } else {
+                color = color.replace("#", "");
+                if (color.length === 3) color = color.split("").map(x => x + x).join("");
+                r = parseInt(color.substring(0, 2), 16);
+                g = parseInt(color.substring(2, 4), 16);
+                b = parseInt(color.substring(4, 6), 16);
+            }
+            r /= 255; g /= 255; b /= 255;
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            if (max === min) { h = s = 0; }
+            else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h *= 60;
+            }
+            return { h, s: s * 100, l: l * 100 };
+        }
+
+        // Compute text color for best contrast against a given background
+        function getContrastTextColor(bgColor) {
+            // Convert HSL or RGB to RGB values
+            let r, g, b;
+            if (bgColor.startsWith("hsl")) {
+                const [h, s, l] = bgColor.match(/\d+/g).map(Number);
+                const a = s / 100;
+                const f = n => {
+                    const k = (n + h / 30) % 12;
+                    const c = a * Math.min(l / 100, 1 - l / 100);
+                    const x = c * (1 - Math.abs(k % 2 - 1));
+                    const m = l / 100 - c;
+                    const rgb = [
+                        [c, x, 0],
+                        [x, c, 0],
+                        [0, c, x],
+                        [0, x, c],
+                        [x, 0, c],
+                        [c, 0, x]
+                    ][Math.floor(k / 2)];
+                    return Math.round((rgb[0] + m) * 255);
+                };
+                r = f(0); g = f(8); b = f(4);
+            } else {
+                [r, g, b] = bgColor.match(/\d+/g).map(Number);
+            }
+
+            // Calculate relative luminance (WCAG formula)
+            const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+
+            // Choose white for dark backgrounds, black for light ones
+            return luminance > 0.5 ? "#000000" : "#ffffff";
         }
 
         // Array data model: ID, Tile, Current, Target, Style
@@ -115,7 +205,8 @@ $(function () {
                     // Active tile: no special class, use gradient color
                     newClass = "";
                     let color = tempToColor(Number(currentTemp), Number(targetTemp));
-                    inlineStyle = "background-color:" + color + ";";
+                    let textColor = getContrastTextColor(color);
+                    inlineStyle = "background-color:" + color + "; color:" + textColor + ";";
                 }
 
                 self.heatbedTileArray.push({

@@ -50,6 +50,11 @@ div#heatbed > div {
     grid-template-rows: auto auto auto auto;
 }
 
+/*
+.grid-container div {
+    transition: background-color 0.2s ease;
+}
+*/
 
 /* Per-tile coloring */
 .tileDisabled {
