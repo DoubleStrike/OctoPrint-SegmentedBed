@@ -2,6 +2,7 @@
 
     <h3>Segmented Bed Display Settings</h3>
 
+    <!-- Enable custom colors -->
     <div class="form-group">
         <label class="control-label">
             <input type="checkbox" data-bind="checked: use_custom_colors">
@@ -12,22 +13,70 @@
         </p>
     </div>
 
+    <!-- Hot color -->
     <div class="form-group" data-bind="visible: use_custom_colors">
         <label class="control-label">Hot color</label>
         <input type="color"
                class="form-control"
                style="width: 80px; padding: 0;"
                data-bind="value: hot_color">
-        <p class="help-block">Color used when a tile is hotter than its target.</p>
     </div>
 
+    <!-- Cold color -->
     <div class="form-group" data-bind="visible: use_custom_colors">
         <label class="control-label">Cold color</label>
         <input type="color"
                class="form-control"
                style="width: 80px; padding: 0;"
                data-bind="value: cold_color">
-        <p class="help-block">Color used when a tile is colder than its target.</p>
+    </div>
+
+    <!-- Reset button -->
+    <div class="form-group" data-bind="visible: use_custom_colors">
+        <button class="btn btn-sm btn-warning"
+                data-bind="click: function() {
+                    hot_color('#ff4444');
+                    cold_color('#4488ff');
+                }">
+            Reset to default colors
+        </button>
+    </div>
+
+    <hr>
+
+    <!-- Live preview -->
+    <h4>Live Preview</h4>
+    <p class="help-block">This preview updates automatically as you change the colors.</p>
+
+    <div style="display: flex; gap: 20px; align-items: center;">
+
+        <!-- Hot preview tile -->
+        <div style="width: 80px; height: 80px; border-radius: 6px; display: flex;
+                    align-items: center; justify-content: center; font-weight: bold;"
+            data-bind="style: {
+                backgroundColor: hot_color(),
+                color: '#ffffff'
+            }">
+            Hot
+        </div>
+
+        <!-- Neutral preview tile (static) -->
+        <div style="width: 80px; height: 80px; border-radius: 6px; display: flex;
+                    align-items: center; justify-content: center; font-weight: bold;
+                    border: 1px solid #888; background-color: transparent; color: inherit;">
+            Neutral
+        </div>
+
+        <!-- Cold preview tile -->
+        <div style="width: 80px; height: 80px; border-radius: 6px; display: flex;
+                    align-items: center; justify-content: center; font-weight: bold;"
+            data-bind="style: {
+                backgroundColor: cold_color(),
+                color: '#ffffff'
+            }">
+            Cold
+        </div>
+
     </div>
 
 </div>
