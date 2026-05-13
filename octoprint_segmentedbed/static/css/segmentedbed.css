@@ -52,7 +52,7 @@ div#heatbed > div {
 
 /*
 .grid-container div {
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease-out, color 0.2s ease-out;
 }
 */
 

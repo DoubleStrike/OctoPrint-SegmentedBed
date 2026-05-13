@@ -24,110 +24,83 @@ $(function () {
             cold: getComputedStyle(document.documentElement).getPropertyValue("--color-primary").trim() || "#4488ff"
         };
 
+        const roundToTwo = (num) => Math.round(num * 100) / 100;
+
         // Convert a tile temperature to a blue → white → red gradient
         function tempToColor(current, target) {
-            // Use cached theme colors
-            const neutralBase = themeColors.neutral;
-            const hotBase = themeColors.hot;
-            const coldBase = themeColors.cold;
+            const hotBase = themeColors.hot || "#ff4444";
+            const coldBase = themeColors.cold || "#4488ff";
 
-            // Convert hex or rgb → HSL
-            const neutralHSL = toHSL(neutralBase);
-            const hotHSL = toHSL(hotBase);
-            const coldHSL = toHSL(coldBase);
-
-            // Compute normalized temperature difference
+            // Normalize temperature difference
             let delta = current - target;
-            let maxDelta = 20;
+            let maxDelta = 10;
             delta = Math.max(-maxDelta, Math.min(maxDelta, delta));
             let norm = delta / maxDelta;
 
-            // Blend using HSL interpolation
-            let h, s, l;
-            if (norm < 0) {
-                // colder than target → neutral → blue
-                const t = Math.abs(norm);
-                h = neutralHSL.h + (coldHSL.h - neutralHSL.h) * t;
-                s = neutralHSL.s + (coldHSL.s - neutralHSL.s) * t;
-                l = neutralHSL.l + (coldHSL.l - neutralHSL.l) * t;
-            } else {
-                // hotter than target → neutral → red
-                const t = norm;
-                h = neutralHSL.h + (hotHSL.h - neutralHSL.h) * t;
-                s = neutralHSL.s + (hotHSL.s - neutralHSL.s) * t;
-                l = neutralHSL.l + (hotHSL.l - neutralHSL.l) * t;
-            }
+            // Compute opacity: fully opaque at extremes, fade to transparent near neutral
+            const opacity = Math.min(1, Math.abs(norm)); // 0 → transparent, 1 → full color
 
-            // Adjust brightness for dark/light theme
-            const isDark = document.body.classList.contains("theme-dark");
-            if (isDark) l *= 0.7; // dim for dark mode
-            else l = Math.min(l * 1.1, 100); // brighten for light mode
+            // Choose color side
+            const baseColor = norm < 0 ? coldBase : hotBase;
 
-            return `hsl(${h}, ${s}%, ${l}%)`;
+            // Convert hex → RGB
+            const { r, g, b } = parseColor(baseColor);
+
+            // Return RGBA string with variable opacity
+            return `rgba(${r}, ${g}, ${b}, ${roundToTwo(opacity)})`;
         }
 
-        // Convert hex or rgb → HSL
-        function toHSL(color) {
-            let r, g, b;
-            if (color.startsWith("rgb")) {
-                [r, g, b] = color.match(/\d+/g).map(Number);
-            } else {
-                color = color.replace("#", "");
-                if (color.length === 3) color = color.split("").map(x => x + x).join("");
-                r = parseInt(color.substring(0, 2), 16);
-                g = parseInt(color.substring(2, 4), 16);
-                b = parseInt(color.substring(4, 6), 16);
+        // Helper: parse hex or rgb(...) → {r,g,b}
+        function parseColor(c) {
+            c = c.trim();
+            if (c.startsWith("rgb")) {
+                const [r, g, b] = c.match(/\d+/g).map(Number);
+                return { r, g, b };
             }
-            r /= 255; g /= 255; b /= 255;
-            const max = Math.max(r, g, b), min = Math.min(r, g, b);
-            let h, s, l = (max + min) / 2;
-            if (max === min) { h = s = 0; }
-            else {
-                const d = max - min;
-                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-                switch (max) {
-                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                    case g: h = (b - r) / d + 2; break;
-                    case b: h = (r - g) / d + 4; break;
-                }
-                h *= 60;
-            }
-            return { h, s: s * 100, l: l * 100 };
+            c = c.replace("#", "");
+            if (c.length === 3) c = c.split("").map(x => x + x).join("");
+            const r = parseInt(c.substring(0, 2), 16);
+            const g = parseInt(c.substring(2, 4), 16);
+            const b = parseInt(c.substring(4, 6), 16);
+            return { r, g, b };
         }
 
-        // Compute text color for best contrast against a given background
+        // Compute text color for best contrast against an RGBA background
         function getContrastTextColor(bgColor) {
-            // Convert HSL or RGB to RGB values
-            let r, g, b;
-            if (bgColor.startsWith("hsl")) {
-                const [h, s, l] = bgColor.match(/\d+/g).map(Number);
-                const a = s / 100;
-                const f = n => {
-                    const k = (n + h / 30) % 12;
-                    const c = a * Math.min(l / 100, 1 - l / 100);
-                    const x = c * (1 - Math.abs(k % 2 - 1));
-                    const m = l / 100 - c;
-                    const rgb = [
-                        [c, x, 0],
-                        [x, c, 0],
-                        [0, c, x],
-                        [0, x, c],
-                        [x, 0, c],
-                        [c, 0, x]
-                    ][Math.floor(k / 2)];
-                    return Math.round((rgb[0] + m) * 255);
-                };
-                r = f(0); g = f(8); b = f(4);
+            // Extract RGBA components
+            const parts = bgColor.match(/\d+(\.\d+)?/g).map(Number);
+            const [r, g, b, a = 1] = parts;
+
+            // Base luminance of the tile color
+            const tileLum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+
+            // Detect theme
+            const isDark = document.body.classList.contains("theme-dark");
+
+            // Compute page background luminance
+            const bg = getComputedStyle(document.body).backgroundColor;
+            const [br, bgG, bb] = bg.match(/\d+/g).map(Number);
+            const pageLum = (0.2126 * br + 0.7152 * bgG + 0.0722 * bb) / 255;
+
+            let effectiveLum;
+            let threshold;
+
+            if (isDark) {
+                // Dark theme: opacity makes the tile visually darker
+                effectiveLum = tileLum * a;
+                threshold = 0.35;
             } else {
-                [r, g, b] = bgColor.match(/\d+/g).map(Number);
+                // Light theme: tile sits on a bright background
+                // Effective luminance is a blend of tile + page background
+                effectiveLum = tileLum * a + pageLum * (1 - a);
+
+                // Higher threshold because the page is bright
+                threshold = 0.55;
             }
 
-            // Calculate relative luminance (WCAG formula)
-            const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-
-            // Choose white for dark backgrounds, black for light ones
-            return luminance > 0.5 ? "#000000" : "#ffffff";
+            return effectiveLum > threshold ? "#000000" : "#ffffff";
         }
+
 
         // Array data model: ID, Tile, Current, Target, Style
         self.heatbedTileArray = ko.observableArray();
@@ -204,9 +177,9 @@ $(function () {
                 } else {
                     // Active tile: no special class, use gradient color
                     newClass = "";
-                    let color = tempToColor(Number(currentTemp), Number(targetTemp));
-                    let textColor = getContrastTextColor(color);
-                    inlineStyle = "background-color:" + color + "; color:" + textColor + ";";
+                    let bg = tempToColor(Number(currentTemp), Number(targetTemp));
+                    let fg = getContrastTextColor(bg);
+                    inlineStyle = "background-color:" + bg + "; color:" + fg + ";";
                 }
 
                 self.heatbedTileArray.push({
