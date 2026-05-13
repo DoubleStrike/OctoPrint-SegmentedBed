@@ -16,6 +16,29 @@ $(function () {
         var temperatureTolerance = 0.3;
         var reorderMatrix = [36, 39, 42, 45, 24, 27, 30, 33, 12, 15, 18, 21, 0, 3, 6, 9];
         
+        // Convert a tile temperature to a blue → white → red gradient
+        function tempToColor(current, target) {
+            let delta = current - target;
+            let maxDelta = 15;
+            delta = Math.max(-maxDelta, Math.min(maxDelta, delta));
+            let norm = delta / maxDelta;
+
+            if (norm < 0) {
+                // Below target: blue → white
+                let t = norm + 1; // -1→0, 0→1
+                let r = 255 * t;
+                let g = 255 * t;
+                let b = 255;
+                return "rgb(" + r + "," + g + "," + b + ")";
+            } else {
+                // Above target: white → red
+                let t = norm; // 0→0, 1→1
+                let r = 255;
+                let g = 255 * (1 - t);
+                let b = 255 * (1 - t);
+                return "rgb(" + r + "," + g + "," + b + ")";            }
+        }
+
         // Array data model: ID, Tile, Current, Target, Style
         self.heatbedTileArray = ko.observableArray();
 
@@ -81,22 +104,27 @@ $(function () {
                 let tileName = splitArray[index];
                 let currentTemp = splitArray[index + 1];
                 let targetTemp = splitArray[index + 2];
-                let newStyle = "";
-            
+                let newClass = "";
+                let inlineStyle = "";
+
                 if (targetTemp == "0.00") {
-                    newStyle = classOff;
-                } else if ((Number(currentTemp) <= Number(targetTemp) + temperatureTolerance) && (Number(currentTemp) >= Number(targetTemp) - temperatureTolerance)) {
-                    newStyle = "";
+                    // Inactive tile: keep disabled class, no gradient
+                    newClass = classOff;
+                    inlineStyle = "";
                 } else {
-                    newStyle = (Number(currentTemp) < Number(targetTemp)) ? classHeat : classCool;
+                    // Active tile: no special class, use gradient color
+                    newClass = "";
+                    let color = tempToColor(Number(currentTemp), Number(targetTemp));
+                    inlineStyle = "background-color:" + color + ";";
                 }
-            
+
                 self.heatbedTileArray.push({
                     ID: self.heatbedTileArray().length,
                     Tile: tileName,
                     Current: currentTemp,
                     Target: targetTemp,
-                    Style: newStyle
+                    Style: newClass,
+                    InlineStyle: inlineStyle
                 });
             });
         }
