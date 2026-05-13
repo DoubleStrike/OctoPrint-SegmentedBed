@@ -134,13 +134,35 @@ $(function () {
         // Average bed temp
         self.AvgBedTemp = ko.observable();
 
+        // NEW: robust structured parser
+        function parseBedTiles(line) {
+            const matches = [...line.matchAll(/(\S+):([-\d.]+)\/([-\d.]+)/g)];
+            const tiles = [];
+
+            for (const m of matches) {
+                const key = m[1];
+                const current = Number(m[2]);
+                const target = Number(m[3]);
+
+                // Only bed tiles: B_x_y
+                const tileMatch = key.match(/^B_(\d)_(\d)$/);
+                if (!tileMatch) continue;
+
+                const x = Number(tileMatch[1]);
+                const y = Number(tileMatch[2]);
+
+                tiles.push({ key, x, y, current, target });
+            }
+
+            return tiles;
+        }
+
         self.fromCurrentData = function (data) {
-            if (!data) return;
-            if (!data.logs) return;
+            if (!data || !data.logs) return;
             
             // Capture current log line
             var newLogData = data.logs[0];
-            if (typeof newLogData == 'undefined') return;
+            if (!newLogData || typeof newLogData == 'undefined') return;
             newLogData = newLogData.trim();
             
             // As of firmware 6.2.6+8948 the expected line is in this format (without line wraps obviously):
@@ -159,75 +181,53 @@ $(function () {
             var preParseData = newLogData.split("@5:0 ")[1];
 
             // Grab the hot-end temp reading
-            var toolTemp = (newLogData.substring(7).split(" ")[0]).split(":")[1];
-            self.HotEndTemp(toolTemp);
+            const toolTempMatch = newLogData.match(/T:([-\d.]+)\//);
+            if (toolTempMatch) self.HotEndTemp(toolTempMatch[1]);
             
             // Grab the average bed temp reading
-            var avgTemperatureReported = (newLogData.substring(7).split(" ")[1]).split(":")[1];
-            self.AvgBedTemp(avgTemperatureReported);
-            
-            // Split on spaces (\s), colons, and slashes - should result in tile_count * 3 array elements (48 for the XL)
-            var splitArray = preParseData.split(/[\s\:\/]+/);
-            if (splitArray.length < 48) return;
+            const bedTempMatch = newLogData.match(/B:([-\d.]+)\//);
+            if (bedTempMatch) self.AvgBedTemp(bedTempMatch[1]);
 
-            // Increment thru every 3rd entry since there are 3 datapoints per tile (name, currentTemp, targetTemp)
-            //      in that order. So we shorthand this by looping thru every 3 items and offsetting the indices.
-            //      This is how we fill the dictionary.
-            var dictionaryOfTemps = {};
-            self.heatbedTileArray.removeAll();
-            
-            // Track maximum observed delta for dynamic scaling
+            // Parse all bed tiles
+            const tiles = parseBedTiles(newLogData);
+            if (tiles.length === 0) return;
+
+            // Compute dynamic max delta for dynamic scaling
             let maxObservedDelta = 0;
-
-            // The dictionary is used here to store the tile data from the serial response.
-            // This is necessary to later re-order the data based on the reorderMatrix.
-            for (i = 0; i < splitArray.length; i += 3) {
-                let x = splitArray[i].substring(2, 3);
-                let y = splitArray[i].substring(4, 5);
-                let id = (3 - Number(y)) * 4 + Number(x) + 1;
-
-                let current = Number(splitArray[i + 1]);
-                let target = Number(splitArray[i + 2]);
-                let delta = Math.abs(current - target);
-
+            for (const t of tiles) {
+                const delta = Math.abs(t.current - t.target);
                 if (delta > maxObservedDelta) maxObservedDelta = delta;
-
-                dictionaryOfTemps[splitArray[i]] = { Current: splitArray[i + 1], Target: splitArray[i + 2], ID: id };
             }
 
             // Clamp dynamic range between 1°C and 10°C
             maxObservedDelta = Math.max(1, Math.min(maxObservedDelta, 10));
 
+            self.heatbedTileArray.removeAll();
+
             // Use the reorderMatrix to map the tile data to the correct positions
             // in the observable array used by the knockout jinja2 template.
             reorderMatrix.forEach(function (index) {
-                let tileName = splitArray[index];
-                let currentTemp = splitArray[index + 1];
-                let targetTemp = splitArray[index + 2];
-                let newClass = "";
-                let inlineStyle = "";
+                const tile = tiles[index / 3]; // each tile is 3 tokens in original format
+                if (!tile) return;
 
-                if (targetTemp == "0.00") {
+                let inlineStyle = "";
+                let newClass = "";
+
+                if (tile.target === 0) {
                     // Inactive tile: keep disabled class, no gradient
                     newClass = classOff;
-                    inlineStyle = "";
                 } else {
-                    // For non-idle tiles, capture the largest delta for dynamic scaling
-                    let delta = Math.abs(Number(currentTemp) - Number(targetTemp));
-                    if (delta > maxObservedDelta) maxObservedDelta = delta;
-
                     // Active tile: no special class, use gradient color
-                    newClass = "";
-                    let bg = tempToColor(Number(currentTemp), Number(targetTemp), maxObservedDelta);
+                    let bg = tempToColor(tile.current, tile.target, maxObservedDelta);
                     let fg = getContrastTextColor(bg);
-                    inlineStyle = "background-color:" + bg + "; color:" + fg + ";";
+                    inlineStyle = `background-color:${bg}; color:${fg};`;
                 }
 
                 self.heatbedTileArray.push({
                     ID: self.heatbedTileArray().length,
-                    Tile: tileName,
-                    Current: currentTemp,
-                    Target: targetTemp,
+                    Tile: tile.key,
+                    Current: tile.current.toFixed(2),
+                    Target: tile.target.toFixed(2),
                     Style: newClass,
                     InlineStyle: inlineStyle
                 });
