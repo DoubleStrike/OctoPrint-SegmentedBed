@@ -6,7 +6,7 @@ As of version 2.0.0, the colors are now configurable via a settings page, and th
 or colder a tile is versus the target temperature. Font colors are dynamically set based on tile color to increase readability.
 
 **Note that as of 2.0.0, the color scheme has changed based on user feedback.** Instead of showing red for heating and blue for cooling, the gradient heatmap now
-shows blue=cold and red=hot. This way, the heatmap tracks more closely with the heat state of the bed, and not with the cooling behavior. The maximum variation 
+shows blue=cold and red=hot. This way, the heatmap tracks more closely with a normal thermometer, and not with the tiles' cooling behavior. The maximum variation 
 is 10 degrees C. Any tile farther from the target than that will show maximum hot or cold color.
 
 
@@ -40,7 +40,7 @@ or manually using this URL:
 
 ## Configuration
 
-The colors used for hot and cold
+The colors used for hot and cold can be configured in the settings page. This page also shows a live preview of the Hot/Neutral/Cold colors to let you see how they will interact with your theme in real-time.
 
 ## To-Do
 
