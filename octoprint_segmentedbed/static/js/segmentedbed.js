@@ -11,7 +11,6 @@ $(function () {
     function SegmentedbedViewModel(parameters) {
         var self = this;
         var classOff = "tileDisabled";
-        var reorderMatrix = [36, 39, 42, 45, 24, 27, 30, 33, 12, 15, 18, 21, 0, 3, 6, 9];
 
         self.settings = parameters[0]; // terminalViewModel
         self.settings = parameters[1]; // settingsViewModel
@@ -190,13 +189,6 @@ $(function () {
             var newLogData = data.logs[0];
             if (!newLogData || typeof newLogData == 'undefined') return;
             newLogData = newLogData.trim();
-            
-            // Extract the portion after @5:0
-            if (newLogData.search("@5:0") < 10) return;
-            var preParseData = newLogData.split("@5:0 ")[1];
-
-            // Split into tokens (name, current, target) to get the order for reordering later
-            var splitArray = preParseData.split(/[\s\:\/]+/);
 
             // As of firmware 6.2.6+8948 the expected line is in this format (without line wraps obviously):
             /*
@@ -220,6 +212,12 @@ $(function () {
             // Parse all bed tiles
             const tiles = parseBedTiles(newLogData);
             if (tiles.length === 0) return;
+
+            // Sort tiles into correct order to prevent needing my previously shitty reordering
+            tiles.sort((a, b) => {
+                if (a.y !== b.y) return b.y - a.y; // y descending
+                return a.x - b.x;                  // x ascending
+            });
 
             const tileDict = {};
             for (const t of tiles) tileDict[t.key] = t;
@@ -250,11 +248,7 @@ $(function () {
 
             // Use the reorderMatrix to map the tile data to the correct positions
             // in the observable array used by the knockout jinja2 template.
-            reorderMatrix.forEach(function (index) {
-                const tileName = splitArray[index];   // B_0_0, B_1_0, etc.
-                const tile = tileDict[tileName];
-                if (!tile) return;
-
+            tiles.forEach(tile => {
                 let inlineStyle = "";
                 let newClass = "";
 
