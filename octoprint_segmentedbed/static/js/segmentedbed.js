@@ -271,7 +271,7 @@ $(function () {
                     InlineStyle: inlineStyle
                 });
             });
-        }
+        };
     }
 
 
