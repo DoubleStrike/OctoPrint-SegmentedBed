@@ -236,9 +236,15 @@ $(function () {
             // Dynamic scaling --------------------------------------------------------------------
 
             // Color legend -----------------------------------------------------------------------
-            // Compute actual min/max tile temps
-            let minTemp = Math.min(...tiles.map(t => t.current));
-            let maxTemp = Math.max(...tiles.map(t => t.current));
+            // Filter for active tiles only (target temperature not equal to 0)
+            const activeTiles = tiles.filter(t => t.target !== 0);
+
+            // Fallback to all tiles if no tiles are active, preventing Math.min/max from receiving an empty array
+            const tilesToCalculate = activeTiles.length > 0 ? activeTiles : tiles;
+
+            // Compute actual min/max tile temps from active tiles only
+            let minTemp = Math.min(...tilesToCalculate.map(t => t.current));
+            let maxTemp = Math.max(...tilesToCalculate.map(t => t.current));
 
             // Update legend
             updateLegend(minTemp, maxTemp, maxObservedDelta);
