@@ -121,12 +121,9 @@ $(function () {
             return effectiveLum > threshold ? "#000000" : "#ffffff";
         }
 
-        function updateLegend(minTemp, maxTemp, dynamicMaxDelta) {
-            const hotBase = getHotColor();
-            const coldBase = getColdColor();
-
-            // Build gradient CSS
-            const gradient = `linear-gradient(to right, ${coldBase}, transparent, ${hotBase})`;
+        function updateLegend(minTemp, maxTemp, minColor, maxColor, dynamicMaxDelta) {
+            // Build gradient CSS using the actual colors of the min and max active tiles
+            const gradient = `linear-gradient(to right, ${minColor}, ${maxColor})`;
 
             const legendHtml = `
         <div style="display:flex; align-items:center; gap:10px; font-size:0.9em;">
@@ -138,16 +135,15 @@ $(function () {
                 background: ${gradient};
                 border: 1px solid rgba(255,255,255,0.2);
             "></div>
-            <span>${maxTemp.toFixed(1)}°C</span>
+            <span>Max: ${maxTemp.toFixed(1)}°C</span>
         </div>
         <div style="text-align:center; font-size:0.8em; opacity:0.7;">
             ΔT range scaled to ${dynamicMaxDelta.toFixed(1)}°C
         </div>
-    `;
+            `;
 
             $("#segmentedbed-legend").html(legendHtml);
         }
-
 
         // Array data model: ID, Tile, Current, Target, Style
         self.heatbedTileArray = ko.observableArray();
@@ -246,8 +242,17 @@ $(function () {
             let minTemp = Math.min(...tilesToCalculate.map(t => t.current));
             let maxTemp = Math.max(...tilesToCalculate.map(t => t.current));
 
-            // Update legend
-            updateLegend(minTemp, maxTemp, maxObservedDelta);
+            // Find the target associated with those min/max tiles to ensure proper color translation
+            // (If using fallback tiles, target will be 0, otherwise it grabs the active target)
+            let minTileTarget = (activeTiles.length > 0) ? activeTiles.find(t => t.current === minTemp).target : 0;
+            let maxTileTarget = (activeTiles.length > 0) ? activeTiles.find(t => t.current === maxTemp).target : 0;
+
+            // Generate the exact UI colors for the coldest and hottest active tiles
+            let minColor = tempToColor(minTemp, minTileTarget, maxObservedDelta);
+            let maxColor = tempToColor(maxTemp, maxTileTarget, maxObservedDelta);
+
+            // Update legend with dynamic colors
+            updateLegend(minTemp, maxTemp, minColor, maxColor, maxObservedDelta);
             // Color legend -----------------------------------------------------------------------
 
             self.heatbedTileArray.removeAll();
