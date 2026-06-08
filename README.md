@@ -9,8 +9,12 @@ or colder a tile is versus the target temperature. Font colors are dynamically s
 shows blue=cold and red=hot. This way, the heatmap tracks more closely with a normal thermometer, and not with the tiles' cooling behavior. The maximum variation 
 is 10 degrees C. Any tile farther from the target than that will show maximum hot or cold color.
 
+It also plays nicely with UICustomizer and dark themes. The legend at the top will show the minimum and maximum temps of all active tiles, as well as the
+minimum and maximum deltas from the target temperature.
 
-<img width="807" height="701" alt="image" src="https://github.com/user-attachments/assets/20ae4d88-ab81-4cbe-9a6b-38ba4f11a385" />
+
+<img width="784" height="787" alt="Segbed Screenshot 2026-06-07 221800" src="https://github.com/user-attachments/assets/d0e6e0ce-a6d6-4202-b29e-7c6f78cf9a15" />
+
 
 
 Tiles are shown in one of 4 states:
@@ -20,14 +24,6 @@ Tiles are shown in one of 4 states:
 | Transparent | Temp Reached | The tile is active and has reached the target temperature. <br/> *The background color of the page will show through.*   |
 | Red         | Above Target | The tile is above the target temperature and is cooling down. Brighter color indicates bigger gap to target temperature. |
 | Blue        | Below Target | The tile is below the target temperature and is heating up. Brighter color indicates bigger gap to target temperature.   |
-
-&nbsp;
-
-&nbsp;
-
-It also plays nicely with UICustomizer and dark themes:
-<img width="711" height="693" alt="image" src="https://github.com/user-attachments/assets/42c5eb73-84f2-450f-a4c6-937cade05a22" />
-
 
 
 
