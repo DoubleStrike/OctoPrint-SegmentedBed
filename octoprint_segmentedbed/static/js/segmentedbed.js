@@ -121,25 +121,34 @@ $(function () {
             return effectiveLum > threshold ? "#000000" : "#ffffff";
         }
 
-        function updateLegend(minTemp, maxTemp, minColor, maxColor, dynamicMaxDelta) {
-            // Build gradient CSS using the actual colors of the min and max active tiles
+        function updateLegend(minTemp, maxTemp, minDelta, maxDelta, minColor, maxColor, dynamicMaxDelta) {
+        // Build gradient CSS
             const gradient = `linear-gradient(to right, ${minColor}, ${maxColor})`;
 
+            // Format deltas to include a '+' for positive values, or just '-' for negative values
+            const formatDelta = (d) => (d >= 0 ? `+${d.toFixed(1)}` : d.toFixed(1));
+
             const legendHtml = `
-        <div style="display:flex; align-items:center; gap:10px; font-size:0.9em;">
-            <span>${minTemp.toFixed(1)}°C</span>
-            <div style="
-                flex:1;
-                height: 14px;
-                border-radius: 7px;
-                background: ${gradient};
-                border: 1px solid rgba(255,255,255,0.2);
-            "></div>
-            <span>Max: ${maxTemp.toFixed(1)}°C</span>
-        </div>
-        <div style="text-align:center; font-size:0.8em; opacity:0.7;">
-            ΔT range scaled to ${dynamicMaxDelta.toFixed(1)}°C
-        </div>
+            <div style="display:flex; align-items:center; gap:10px; font-size:0.9em;">
+                <span>
+                    Min: ${minTemp.toFixed(1)}°C 
+                    <br/>∆: ${formatDelta(minDelta)}°C
+                </span>
+                <div style="
+                    flex:1;
+                    height: 14px;
+                    border-radius: 7px;
+                    background: ${gradient};
+                    border: 1px solid rgba(255,255,255,0.2);
+                "></div>
+                <span>
+                    Max: ${maxTemp.toFixed(1)}°C
+                    <br/>∆: ${formatDelta(maxDelta)}°C
+                </span>
+            </div>
+            <div style="text-align:center; font-size:0.8em; opacity:0.7;">
+                ΔT range scaled to ${dynamicMaxDelta.toFixed(1)}°C
+            </div>
             `;
 
             $("#segmentedbed-legend").html(legendHtml);
@@ -235,24 +244,28 @@ $(function () {
             // Filter for active tiles only (target temperature not equal to 0)
             const activeTiles = tiles.filter(t => t.target !== 0);
 
-            // Fallback to all tiles if no tiles are active, preventing Math.min/max from receiving an empty array
+            // Fallback to all tiles if no tiles are active, preventing Math.min/max from breaking
             const tilesToCalculate = activeTiles.length > 0 ? activeTiles : tiles;
 
-            // Compute actual min/max tile temps from active tiles only
+            // Calculate raw temperatures for the legend bounds
             let minTemp = Math.min(...tilesToCalculate.map(t => t.current));
             let maxTemp = Math.max(...tilesToCalculate.map(t => t.current));
 
-            // Find the target associated with those min/max tiles to ensure proper color translation
-            // (If using fallback tiles, target will be 0, otherwise it grabs the active target)
+            // Calculate true independent min/max variances across all active tiles
+            // (If using fallback idle tiles where target is 0, deltas will naturally result in 0)
+            const activeDeltas = tilesToCalculate.map(t => t.target !== 0 ? (t.current - t.target) : 0);
+            let minDelta = Math.min(...activeDeltas);
+            let maxDelta = Math.max(...activeDeltas);
+
+            // Get the correct gradient colors for the min/max temp bounds
             let minTileTarget = (activeTiles.length > 0) ? activeTiles.find(t => t.current === minTemp).target : 0;
             let maxTileTarget = (activeTiles.length > 0) ? activeTiles.find(t => t.current === maxTemp).target : 0;
 
-            // Generate the exact UI colors for the coldest and hottest active tiles
             let minColor = tempToColor(minTemp, minTileTarget, maxObservedDelta);
             let maxColor = tempToColor(maxTemp, maxTileTarget, maxObservedDelta);
 
-            // Update legend with dynamic colors
-            updateLegend(minTemp, maxTemp, minColor, maxColor, maxObservedDelta);
+            // Update legend with independent temperatures, independent deltas, and dynamic colors
+            updateLegend(minTemp, maxTemp, minDelta, maxDelta, minColor, maxColor, maxObservedDelta);
             // Color legend -----------------------------------------------------------------------
 
             self.heatbedTileArray.removeAll();
