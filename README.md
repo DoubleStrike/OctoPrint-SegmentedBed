@@ -45,3 +45,6 @@ The colors used for hot and cold can be configured in the settings page. This pa
 ## To-Do
 
 * Add a configurable tolerance value used in the "temp reached" calculation, such that being within x.x degrees of the target value is considered "good enough"
+
+## License and Copying
+* License: AGPLv3 - all derivative work must be AGPLv3 compliant!
