@@ -121,11 +121,19 @@ $(function () {
             return effectiveLum > threshold ? "#000000" : "#ffffff";
         }
 
-        function updateLegend(minTemp, maxTemp, minDelta, maxDelta, minColor, maxColor, dynamicMaxDelta) {
-        // Build gradient CSS
-            const gradient = `linear-gradient(to right, ${minColor}, ${maxColor})`;
+        function updateLegend(minTemp, maxTemp, minDelta, maxDelta, minColor, maxColor, neutralColor, dynamicMaxDelta) {
+            // Determine the gradient style based on whether the deltas cross the 0°C boundary
+            let gradient;
 
-            // Format deltas to include a '+' for positive values, or just '-' for negative values
+            if ((minDelta < 0 && maxDelta > 0) || (minDelta === 0 && maxDelta === 0)) {
+                // Mix of hot and cold (or completely idle): Fade to neutral background in the middle
+                gradient = `linear-gradient(to right, ${minColor}, ${neutralColor}, ${maxColor})`;
+            } else {
+                // Entirely over-temp (all red) or entirely under-temp (all blue): 
+                // Smooth transition across the active spectrum without dropping into black
+                gradient = `linear-gradient(to right, ${minColor}, ${maxColor})`;
+            }
+
             const formatDelta = (d) => (d >= 0 ? `+${d.toFixed(1)}` : d.toFixed(1));
 
             const legendHtml = `
@@ -247,25 +255,35 @@ $(function () {
             // Fallback to all tiles if no tiles are active, preventing Math.min/max from breaking
             const tilesToCalculate = activeTiles.length > 0 ? activeTiles : tiles;
 
-            // Calculate raw temperatures for the legend bounds
+            // 1. Calculate raw temperatures for text display
             let minTemp = Math.min(...tilesToCalculate.map(t => t.current));
             let maxTemp = Math.max(...tilesToCalculate.map(t => t.current));
 
-            // Calculate true independent min/max variances across all active tiles
+            // 2. Calculate true independent min/max variances across all active tiles
             // (If using fallback idle tiles where target is 0, deltas will naturally result in 0)
             const activeDeltas = tilesToCalculate.map(t => t.target !== 0 ? (t.current - t.target) : 0);
             let minDelta = Math.min(...activeDeltas);
             let maxDelta = Math.max(...activeDeltas);
 
-            // Get the correct gradient colors for the min/max temp bounds
-            let minTileTarget = (activeTiles.length > 0) ? activeTiles.find(t => t.current === minTemp).target : 0;
-            let maxTileTarget = (activeTiles.length > 0) ? activeTiles.find(t => t.current === maxTemp).target : 0;
+            // 3. Find the tiles that match the MIN and MAX DELTAS to dictate the legend gradient
+            let minDeltaTile = tilesToCalculate.find(t => (t.target !== 0 ? (t.current - t.target) : 0) === minDelta);
+            let maxDeltaTile = tilesToCalculate.find(t => (t.target !== 0 ? (t.current - t.target) : 0) === maxDelta);
 
-            let minColor = tempToColor(minTemp, minTileTarget, maxObservedDelta);
-            let maxColor = tempToColor(maxTemp, maxTileTarget, maxObservedDelta);
+            let minDeltaTemp = minDeltaTile ? minDeltaTile.current : minTemp;
+            let minDeltaTarget = minDeltaTile ? minDeltaTile.target : 0;
 
-            // Update legend with independent temperatures, independent deltas, and dynamic colors
-            updateLegend(minTemp, maxTemp, minDelta, maxDelta, minColor, maxColor, maxObservedDelta);
+            let maxDeltaTemp = maxDeltaTile ? maxDeltaTile.current : maxTemp;
+            let maxDeltaTarget = maxDeltaTile ? maxDeltaTile.target : 0;
+
+            // 4. Generate the EXACT UI colors (preserving low opacity!) for the delta extremes
+            let minColor = tempToColor(minDeltaTemp, minDeltaTarget, maxObservedDelta);
+            let maxColor = tempToColor(maxDeltaTemp, maxDeltaTarget, maxObservedDelta);
+
+            // 5. Grab your theme's default background color to use as the center fade anchor
+            let neutralColor = themeColors.neutral || "#222222";
+
+            // Update legend with our 3-stop configuration
+            updateLegend(minTemp, maxTemp, minDelta, maxDelta, minColor, maxColor, neutralColor, maxObservedDelta);
             // Color legend -----------------------------------------------------------------------
 
             self.heatbedTileArray.removeAll();
