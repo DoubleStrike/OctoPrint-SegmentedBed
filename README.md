@@ -48,6 +48,7 @@ The colors used for hot and cold can be configured in the settings page. This pa
 ## To-Do
 
 * No open to-do items
+* Got suggestions or ideas? Please leave a feature request under the Issues tab.
 
 ## License and Copying
 * License: AGPLv3 - all derivative work must be AGPLv3 compliant!
