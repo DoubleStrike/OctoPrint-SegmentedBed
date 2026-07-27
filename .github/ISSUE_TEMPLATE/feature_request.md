@@ -1,7 +1,7 @@
 ---
 name: Feature request
 about: Suggest an idea for this project
-title: "[FEATURE REQUEST] "
+title: "[FEATURE REQUEST] Add_meaningful_name_here"
 labels: ''
 assignees: ''
 
