@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "Segmented-Bed-Plugin"
-version = "2.1.1"
+version = "2.1.2"
 description = "A plugin to display segmented heatbed temps for Prusa XL printers"
 authors = [
     { name = "DoubleStrike", email = "nikhil@doublestrike.com" },
