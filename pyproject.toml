@@ -1,0 +1,42 @@
+[build-system]
+requires = [
+    "setuptools>=68",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Segmented-Bed-Plugin"
+version = "2.1.1"
+description = "A plugin to display segmented heatbed temps for Prusa XL printers"
+authors = [
+    { name = "DoubleStrike", email = "nikhil@doublestrike.com" },
+]
+requires-python = ">=3,<4"
+dependencies = []
+dynamic = [
+    "license",
+]
+
+[project.entry-points."octoprint.plugin"]
+segmentedbed = "octoprint_segmentedbed"
+
+[project.urls]
+Homepage = "https://github.com/DoubleStrike/OctoPrint-SegmentedBed"
+
+[project.optional-dependencies]
+develop = [
+    "go-task-bin",
+]
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = [
+    "octoprint_segmentedbed",
+    "octoprint_segmentedbed.*",
+]
