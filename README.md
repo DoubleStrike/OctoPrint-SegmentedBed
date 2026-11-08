@@ -15,7 +15,7 @@ or colder a tile is versus the target temperature. Font colors are dynamically s
 shows blue=cold and red=hot. This way, the heatmap tracks more closely with a normal thermometer, and not with the tiles' cooling behavior. The maximum variation 
 is 10 degrees C. Any tile farther from the target than that will show maximum hot or cold color.
 
-It also plays nicely with UICustomizer and dark themes. The legend at the top will show the minimum and maximum temps of all active tiles, as well as the
+It also plays nicely with [UICustomizerReborn](https://github.com/DoubleStrike/OctoPrint-UICustomizerReborn) and dark themes. The legend at the top will show the minimum and maximum temps of all active tiles, as well as the
 minimum and maximum deltas from the target temperature.
 
 ## Screenshot
