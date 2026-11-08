@@ -46,16 +46,31 @@ class SegmentedbedPlugin(
                 "displayName": "Segmented Bed Plugin",
                 "displayVersion": self._plugin_version,
 
-                # version check: github repository
+                # Version check: GitHub repository
                 "type": "github_release",
                 "user": "DoubleStrike",
                 "repo": "OctoPrint-SegmentedBed",
                 "current": self._plugin_version,
 
-                # update method: pip
+                # Update method: pip
                 "pip": "https://github.com/DoubleStrike/OctoPrint-SegmentedBed/archive/{target_version}.zip",
+
+                # Release channels
+                "stable_branch": {
+                    "name": "Stable",
+                    "branch": "master",
+                    "commitish": ["master"],
+                },
+                "prerelease_branches": [
+                    {
+                        "name": "Beta",
+                        "branch": "master",
+                        "commitish": ["master"],
+                    }
+                ],
             }
         }
+
         
     ##~~ StartupPlugin mixin
 
