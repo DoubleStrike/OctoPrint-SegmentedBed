@@ -25,6 +25,9 @@ class SegmentedbedPlugin(
         return [
             dict(type="settings", custom_bindings=False)
         ]
+        
+    def is_template_autoescaped(self):
+        return True        
 
     ##~~ AssetPlugin mixin
 
