@@ -40,27 +40,28 @@ class SegmentedbedPlugin(
 
     ##~~ Softwareupdate hook
 
+
     def get_update_information(self):
         return {
             "segmentedbed": {
                 "displayName": "Segmented Bed Plugin",
                 "displayVersion": self._plugin_version,
 
-                # Version check: GitHub repository
                 "type": "github_release",
                 "user": "DoubleStrike",
                 "repo": "OctoPrint-SegmentedBed",
                 "current": self._plugin_version,
 
-                # Update method: pip
                 "pip": "https://github.com/DoubleStrike/OctoPrint-SegmentedBed/archive/{target_version}.zip",
 
-                # Release channels
+                # Stable release channel
                 "stable_branch": {
                     "name": "Stable",
                     "branch": "master",
                     "commitish": ["master"],
                 },
+
+                # Optional pre-release channel
                 "prerelease_branches": [
                     {
                         "name": "Beta",
@@ -68,6 +69,10 @@ class SegmentedbedPlugin(
                         "commitish": ["master"],
                     }
                 ],
+
+                # Enable channel selection
+                "prerelease": True,
+                "prerelease_channel": "master",
             }
         }
 
