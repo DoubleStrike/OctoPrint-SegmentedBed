@@ -64,7 +64,7 @@ class SegmentedbedPlugin(
                 "prerelease_branches": [
                     {
                         "name": "Beta",
-                        "branch": "master",
+                        "branch": "beta",
                         "commitish": ["master"],
                     }
                 ],
